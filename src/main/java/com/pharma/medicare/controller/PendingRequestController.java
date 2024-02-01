@@ -1,0 +1,77 @@
+package com.pharma.medicare.controller;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.pharma.medicare.constant.ServiceConstants;
+import com.pharma.medicare.request.PendingRequest;
+import com.pharma.medicare.service.PendingRequestService;
+import com.pharma.medicare.utility.CommonUtil;
+
+@RestController
+@CrossOrigin
+@RequestMapping("api/v1/pending-req")
+public class PendingRequestController {
+
+	private Logger LOGGER = LoggerFactory.getLogger(PendingRequestController.class);
+
+	@Autowired
+	PendingRequestService pendingReuestService;
+
+	// get pending requests
+	@GetMapping("pendingrequests")
+	public List<PendingRequest> getAllPendingRequests() {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL,
+				CommonUtil.getString("api/v1/pending-req/pendingrequests")));
+		List<PendingRequest> response = null;
+		try {
+			response = pendingReuestService.getAllPendingRequests();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+	}
+
+	// Approved pending requests
+	@RequestMapping("giveapproval/{userName}")
+	public String giveUserApproval(@PathVariable String userName) {
+		LOGGER.info(
+				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/giveapproval")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userName)));
+		String response = null;
+		try {
+			response = pendingReuestService.giveUserApproval(userName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+
+	}
+
+	// Reject pending requests
+	@RequestMapping("rejectapproval/{userName}")
+	public String rejectUserApproval(@PathVariable String userName) {
+		LOGGER.info(
+				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/rejectapproval")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userName)));
+		String response = null;
+		try {
+			response = pendingReuestService.rejectUserApproval(userName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+	}
+
+}
