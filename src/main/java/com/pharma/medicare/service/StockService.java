@@ -16,6 +16,6 @@ public interface StockService {
 
 	String editProductStock(ProductStockRequest productStockRequest);
 
-	String deleteProductStock(String productName);
+	String deleteProductStock(Long productId);
 
 }
