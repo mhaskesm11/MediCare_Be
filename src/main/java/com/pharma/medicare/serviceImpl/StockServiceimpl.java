@@ -66,9 +66,9 @@ public class StockServiceimpl implements StockService {
 	}
 
 	@Override
-	public String deleteProductStock(String productName) {
-		LOGGER.info("Entry :: StockServiceimpl :: deleteProductStock():" + productName);
-		Optional<ProductStock> optional = productStockRepository.findByProductName(productName);
+	public String deleteProductStock(Long productId) {
+		LOGGER.info("Entry :: StockServiceimpl :: deleteProductStock():" + productId);
+		Optional<ProductStock> optional = productStockRepository.findByProductId(productId);
 		String response = null;
 		if (optional.isPresent()) {
 			ProductStock stock = optional.get();

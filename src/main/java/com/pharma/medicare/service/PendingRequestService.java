@@ -10,8 +10,8 @@ public interface PendingRequestService {
 
 	List<PendingRequest> getAllPendingRequests();
 
-	String giveUserApproval(String userName);
+	String giveUserApproval(Long userId);
 
-	String rejectUserApproval(String userName);
+	String rejectUserApproval(Long userId);
 
 }

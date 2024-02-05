@@ -42,14 +42,14 @@ public class PendingRequestController {
 	}
 
 	// Approved pending requests
-	@RequestMapping("giveapproval/{userName}")
-	public String giveUserApproval(@PathVariable String userName) {
+	@GetMapping("giveapproval/{userId}")
+	public String giveUserApproval(@PathVariable Long userId) {
 		LOGGER.info(
 				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/giveapproval")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userName)));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userId)));
 		String response = null;
 		try {
-			response = pendingReuestService.giveUserApproval(userName);
+			response = pendingReuestService.giveUserApproval(userId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,14 +59,14 @@ public class PendingRequestController {
 	}
 
 	// Reject pending requests
-	@RequestMapping("rejectapproval/{userName}")
-	public String rejectUserApproval(@PathVariable String userName) {
+	@RequestMapping("rejectapproval/{userId}")
+	public String rejectUserApproval(@PathVariable Long userId) {
 		LOGGER.info(
 				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/rejectapproval")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userName)));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userId)));
 		String response = null;
 		try {
-			response = pendingReuestService.rejectUserApproval(userName);
+			response = pendingReuestService.rejectUserApproval(userId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
