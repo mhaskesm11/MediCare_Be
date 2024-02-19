@@ -31,6 +31,14 @@ public class ServiceConstants {
 	public static final String USER_APPROVED = "User Approved Successfully";
 	
 	public static final String USER_REJECTED = "User Rejected Successfully";
+
+	public static final String USER_FOUND = "User Email Found Successfully";
+
+	public static final String USER_NOTFOUND = "User Email Not Found";
+
+	public static final String USER_PASSWORD_MODIFIED = "User Password Updated Successfully";
+
+	public static final String USER_PASSWORD_NOT_MODIFIED = "User Password Not Modified";
 	
 
 }

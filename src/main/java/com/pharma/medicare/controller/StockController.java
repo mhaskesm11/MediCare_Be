@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.domain.ProductStock;
+import com.pharma.medicare.request.ProductSearchRequest;
 import com.pharma.medicare.request.ProductStockRequest;
+import com.pharma.medicare.response.ProductSearchResponse;
 import com.pharma.medicare.service.StockService;
 import com.pharma.medicare.utility.CommonUtil;
 
@@ -31,14 +33,13 @@ public class StockController {
 	@Autowired
 	StockService stockService;
 
-	@GetMapping("all")
-	public List<ProductStock> getAllProductStock() {
+	@PostMapping("all")
+	public ProductSearchResponse getAllProductStock(@RequestBody ProductSearchRequest productSearchRequest) {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/stock/all")));
-		// LOGGER.info(String.format(ServiceConstants.REQUEST_URL,
-		// CommonUtil.getString(userRequest)));
-		List<ProductStock> response = null;
+		
+		ProductSearchResponse response = null;
 		try {
-			response = stockService.getAllProductStock();
+			response = stockService.getAllProductStock(productSearchRequest);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

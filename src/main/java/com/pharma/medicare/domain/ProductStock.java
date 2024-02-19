@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "txn_product_stock")
-public class ProductStock {
+public class ProductStock extends AuditEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,9 @@ public class ProductStock {
 	
 	@Column(name = "product_name")
 	private String productName;
+	
+	@Column(name = "company_name")
+	private String companyName;
 	
 	@Column(name = "quantity")
 	private Long quantity;
@@ -41,6 +44,14 @@ public class ProductStock {
 		this.productName = productName;
 	}
 
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
 	public Long getQuantity() {
 		return quantity;
 	}
@@ -59,10 +70,7 @@ public class ProductStock {
 
 	@Override
 	public String toString() {
-		return "ProductStock [productId=" + productId + ", productName=" + productName + ", quantity=" + quantity
-				+ ", price=" + price + "]";
+		return "ProductStock [productId=" + productId + ", productName=" + productName + ", companyName=" + companyName
+				+ ", quantity=" + quantity + ", price=" + price + "]";
 	}
-
-
-
 }
