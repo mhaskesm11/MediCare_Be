@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	List<PendingRequest> getAllPendingRequests();
 
 	Optional<User> findByUserId(Long userId);
+
+	Optional<User> findByEmail(String email);
 	
 	
 

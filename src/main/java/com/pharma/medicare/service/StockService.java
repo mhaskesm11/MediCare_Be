@@ -1,16 +1,15 @@
 package com.pharma.medicare.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
-import com.pharma.medicare.domain.ProductStock;
+import com.pharma.medicare.request.ProductSearchRequest;
 import com.pharma.medicare.request.ProductStockRequest;
+import com.pharma.medicare.response.ProductSearchResponse;
 
 @Service
 public interface StockService {
 
-	List<ProductStock> getAllProductStock();
+	ProductSearchResponse getAllProductStock(ProductSearchRequest productSearchRequest);
 
 	String addProductStock(ProductStockRequest productStockRequest);
 

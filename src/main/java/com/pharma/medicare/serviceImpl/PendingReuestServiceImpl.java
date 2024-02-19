@@ -39,6 +39,7 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 		if (optional.isPresent()) {
 			User user=optional.get();
 			user.setApproved(true);
+			user.setUpdatedBy("Pending work");
 			userRepository.save(user);
 			response=ServiceConstants.USER_APPROVED;
 		}
