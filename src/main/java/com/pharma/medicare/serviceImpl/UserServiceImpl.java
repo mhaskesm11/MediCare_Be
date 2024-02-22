@@ -1,11 +1,17 @@
 package com.pharma.medicare.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.constant.ServiceConstants;
@@ -20,12 +26,32 @@ import com.pharma.medicare.response.UserSignupResponse;
 import com.pharma.medicare.service.UserService;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService,UserDetailsService {
 
 	private Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired(required=true)
+	private PasswordEncoder bcryptEncoder;
+	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+		Optional<User> user = userRepository.findByUserName(username);
+
+		if (!user.isPresent()) {
+			throw new UsernameNotFoundException("User not found with username: " + username);
+		}
+		return new org.springframework.security.core.userdetails.User(user.get().getUserName(),
+				user.get().getPassword(), new ArrayList<>());
+	}
 
 	@Override
 	public UserLoginResponse userLogin(UserLoginRequest userRequest) {
@@ -36,14 +62,14 @@ public class UserServiceImpl implements UserService {
 
 		if (optional.isPresent()) {
 			User foundUser = optional.get();
-			if (foundUser.getPassword().equals(userRequest.getPassword())
-					&& foundUser.isApproved()) {
+			boolean passwordEqualityCheck=bCryptPasswordEncoder.matches(userRequest.getPassword(), foundUser.getPassword());
+			if (passwordEqualityCheck && foundUser.isApproved()) {
 				loginResponse.setMode(foundUser.getMode());
 				loginResponse.setStatus(ServiceConstants.LOGIN_SUCCESSFUL);
 
 			} else {
 				
-				if (!foundUser.getPassword().equals(userRequest.getPassword())) {
+				if (!passwordEqualityCheck) {
 					loginResponse.setStatus(ServiceConstants.INVALID_PASSWORD);
 				}
 				if (!foundUser.isApproved()) {
@@ -67,6 +93,7 @@ public class UserServiceImpl implements UserService {
 		if (!optional.isPresent()) {
 			User user = new User();
 			BeanUtils.copyProperties(userRequest, user);
+			user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
 			user.setFullName(userRequest.getFirstName() + " " + userRequest.getLastName());
 			user.setApproved(false);
 			user.setIsActive("Y");
@@ -104,7 +131,7 @@ public class UserServiceImpl implements UserService {
 		if(optional.isPresent()) {
 			User user=new User();
 			BeanUtils.copyProperties(optional.get(), user);
-			user.setPassword(updatePassWordRequest.getNewPassword());
+			user.setPassword(bcryptEncoder.encode(updatePassWordRequest.getNewPassword()));
 			userRepository.save(user);
 			response=ServiceConstants.USER_PASSWORD_MODIFIED;
 		}else {

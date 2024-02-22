@@ -22,7 +22,7 @@ import com.pharma.medicare.service.UserService;
 import com.pharma.medicare.utility.CommonUtil;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RequestMapping("api/v1/user")
 public class UserController {
 
@@ -47,7 +47,7 @@ public class UserController {
 	}
 
 	// login window
-	@RequestMapping("login")
+	@PostMapping("login")
 	public UserLoginResponse login(@RequestBody UserLoginRequest userRequest) {
 
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/login")));
