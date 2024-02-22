@@ -1,5 +1,6 @@
 package com.pharma.medicare.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.request.UpdatePassWordRequest;
@@ -19,5 +20,7 @@ public interface UserService {
 	PasswordResponse forgotUserPassword(String email);
 
 	String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest);
+
+	UserDetails loadUserByUsername(String username);
 
 }

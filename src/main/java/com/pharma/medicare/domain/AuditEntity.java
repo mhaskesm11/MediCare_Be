@@ -2,14 +2,13 @@ package com.pharma.medicare.domain;
 
 import java.util.Date;
 
-import jakarta.persistence.Column;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class AuditEntity {

@@ -1,7 +1,5 @@
 package com.pharma.medicare.response;
 
-import com.pharma.medicare.domain.User;
-
 public class UserLoginResponse {
 	
 	private String status;
