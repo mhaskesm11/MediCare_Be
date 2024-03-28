@@ -17,25 +17,25 @@ public class User extends AuditEntity {
 	private Long userId;
 
 	@Column(name = "user_name")
-	String userName;
+	private String userName;
 
 	@Column(name = "password")
-	String password;
+	private String password;
 
 	@Column(name = "mode")
-	String mode;
+	private String mode;
 
 	@Column(name = "full_name")
-	String fullName;
+	private String fullName;
 
 	@Column(name = "contact_number")
-	String contactNumber;
+	private String contactNumber;
 
 	@Column(name = "email")
-	String email;
+	private String email;
 
 	@Column(name = "approved")
-	boolean approved;
+	private boolean approved;
 
 	public Long getUserId() {
 		return userId;
