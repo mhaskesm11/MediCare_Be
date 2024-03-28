@@ -1,5 +1,7 @@
 package com.pharma.medicare.serviceImpl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,12 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.repository.ProductStockRepository;
+import com.pharma.medicare.request.ProductSearchRequest;
 import com.pharma.medicare.request.ProductStockRequest;
+import com.pharma.medicare.response.ProductSearchDto;
+import com.pharma.medicare.response.ProductSearchResponse;
 import com.pharma.medicare.service.StockService;
 
 @Service
@@ -22,14 +28,118 @@ public class StockServiceimpl implements StockService {
 
 	@Autowired
 	ProductStockRepository productStockRepository;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+	
+	String getDetailQuery="select * from txn_product_stock tps ";
+	String getCount="select count(*) from txn_product_stock tps";
 
-	@Override
-	public List<ProductStock> getAllProductStock() {
-		LOGGER.info("Entry :: StockServiceimpl :: getAllProductStock():");
-		List<ProductStock> allProductStocks = productStockRepository.getAllProductStocks();
-		LOGGER.info("Exit :: StockServiceimpl :: getAllProductStock():" + allProductStocks);
-		return allProductStocks;
-	}
+		@Override
+		public ProductSearchResponse getAllProductStock(ProductSearchRequest productSearchRequest) {
+			LOGGER.info("Entry :: StockServiceimpl :: getAllProductStock():" +productSearchRequest);
+			String queryResponse="";
+			String countResponse="";
+			String offSetQuery="";
+			StringBuilder stringBuilder=new StringBuilder();
+			ProductSearchResponse productSearchResponse=new ProductSearchResponse();
+			
+			if(productSearchRequest.getProductName()!=null && !productSearchRequest.getProductName().isEmpty())
+			{
+				stringBuilder.append(" tps.product_name like ");
+				stringBuilder.append("'%" + productSearchRequest.getProductName() +"%'");
+				stringBuilder.append(" And");
+			
+			}
+			if(productSearchRequest.getCompanyName()!=null && !productSearchRequest.getCompanyName().isEmpty())
+			{
+				stringBuilder.append(" tps.company_name like ");
+				stringBuilder.append("'%" + productSearchRequest.getCompanyName() +"%'");
+				stringBuilder.append(" And");
+			}
+			
+			if(productSearchRequest.getCreatedBy()!=null && !productSearchRequest.getCreatedBy().isEmpty())
+			{
+				stringBuilder.append(" tps.created_by like ");
+				stringBuilder.append("'%" + productSearchRequest.getCreatedBy() +"%'");
+				stringBuilder.append(" And");			
+			}
+			if(productSearchRequest.getCreatedDate()!=null && !productSearchRequest.getCreatedDate().isEmpty())
+			{
+				stringBuilder.append(" to_char(tps.created_date,'yyyy-mm-dd') like ");
+				stringBuilder.append("'%" + productSearchRequest.getCreatedDate() +"%'");
+				stringBuilder.append(" And");
+			}
+			
+			int pagecount = productSearchRequest.getPage() - 1;
+			int offset = pagecount * productSearchRequest.getLimit();
+			
+			if (!productSearchRequest.getOrderBy().isEmpty() && 
+				 !productSearchRequest.getOrderDirection().isEmpty())
+			{
+				if (productSearchRequest.getOrderBy().equalsIgnoreCase("productName"))
+				{
+					offSetQuery = " ORDER BY tps.product_name " + productSearchRequest.getOrderDirection() + " LIMIT "
+							+ offset + " , " + productSearchRequest.getLimit() ;
+				} 
+				else if (productSearchRequest.getOrderBy().equalsIgnoreCase("companyName"))
+				{
+					offSetQuery = " ORDER BY tps.company_name " + productSearchRequest.getOrderDirection() + " LIMIT " + offset
+							+ " , " + productSearchRequest.getLimit() ;
+				} 
+				
+				else if (productSearchRequest.getOrderBy().equalsIgnoreCase("createdBy")) 
+				{
+					offSetQuery = " ORDER BY tps.created_by " + productSearchRequest.getOrderDirection() + " LIMIT " + offset
+							+ " , " + productSearchRequest.getLimit() ;
+				} 
+				else if (productSearchRequest.getOrderBy().equalsIgnoreCase("createdDate"))
+				{
+					offSetQuery = " ORDER BY tps.created_date " + productSearchRequest.getOrderDirection() + " LIMIT "
+							+ offset + " , " + productSearchRequest.getLimit() ;
+				}
+				else {
+					offSetQuery = " order by tps.product_id asc LIMIT " + offset + " , " + productSearchRequest.getLimit();
+				}
+				
+			} 
+			if (!stringBuilder.isEmpty()) {
+				stringBuilder.replace(stringBuilder.length() - 3, stringBuilder.length(), "");
+				queryResponse = getDetailQuery + " where " + stringBuilder + " AND is_active = 'Y' " + " " + offSetQuery;
+			} else {
+				queryResponse = getDetailQuery + " where is_active = 'Y' " + " " + offSetQuery;
+			}
+
+			if (!stringBuilder.isEmpty()) {
+				countResponse = getCount + " where " + stringBuilder + " AND is_active = 'Y' ";
+			} else {
+				countResponse = getCount + " where is_active = 'Y' ";
+			}
+			
+			List<ProductSearchDto> ProductSearchResponses = jdbcTemplate.query(queryResponse,
+					(rs, rowNum) -> productMapFields(rs));
+			int totalCount = jdbcTemplate.queryForObject(countResponse.toString(), Integer.class);
+			productSearchResponse.setCount(Long.valueOf(totalCount));
+			productSearchResponse.setLimit(productSearchRequest.getLimit());
+			productSearchResponse.setPage(productSearchRequest.getPage());		
+			productSearchResponse.setResultObject(ProductSearchResponses);
+			LOGGER.info("Exit :: StockServiceimpl :: getAllProductStock():" + productSearchResponse);
+			return productSearchResponse;
+		}
+
+	private ProductSearchDto productMapFields(ResultSet rs) throws SQLException {
+		ProductSearchDto product=new ProductSearchDto();
+		product.setProductId(rs.getLong("product_id"));
+		product.setProductName(rs.getString("product_name"));
+		product.setCompanyName(rs.getString("company_name"));
+		product.setQuantity(rs.getLong("quantity"));
+		product.setPrice(rs.getDouble("price"));
+		product.setCreatedBy(rs.getString("created_by"));
+		product.setCreatedDate(rs.getDate("created_date"));
+		product.setUpdatedBy(rs.getString("updated_by"));
+		product.setUpdatedDate(rs.getDate("updated_date"));
+			return product;
+		}
 
 	@Override
 	public String addProductStock(ProductStockRequest productStockRequest) {
@@ -66,9 +176,9 @@ public class StockServiceimpl implements StockService {
 	}
 
 	@Override
-	public String deleteProductStock(String productName) {
-		LOGGER.info("Entry :: StockServiceimpl :: deleteProductStock():" + productName);
-		Optional<ProductStock> optional = productStockRepository.findByProductName(productName);
+	public String deleteProductStock(Long productId) {
+		LOGGER.info("Entry :: StockServiceimpl :: deleteProductStock():" + productId);
+		Optional<ProductStock> optional = productStockRepository.findByProductId(productId);
 		String response = null;
 		if (optional.isPresent()) {
 			ProductStock stock = optional.get();

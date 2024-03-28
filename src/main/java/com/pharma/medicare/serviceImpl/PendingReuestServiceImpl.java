@@ -32,13 +32,14 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 	}
 
 	@Override
-	public String giveUserApproval(String userName) {
-		LOGGER.info("Entry :: PendingReuestServiceImpl :: getAllPendingRequests():" + userName);
-		Optional<User> optional = userRepository.findByUserName(userName);
+	public String giveUserApproval(Long userId) {
+		LOGGER.info("Entry :: PendingReuestServiceImpl :: getAllPendingRequests():" + userId);
+		Optional<User> optional = userRepository.findByUserId(userId);
 		String response=null;
 		if (optional.isPresent()) {
 			User user=optional.get();
 			user.setApproved(true);
+			user.setUpdatedBy("Pending work");
 			userRepository.save(user);
 			response=ServiceConstants.USER_APPROVED;
 		}
@@ -47,13 +48,12 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 	}
 
 	@Override
-	public String rejectUserApproval(String userName) {
-		LOGGER.info("Entry :: PendingReuestServiceImpl :: getAllPendingRequests():" + userName);
-		Optional<User> optional = userRepository.findByUserName(userName);
+	public String rejectUserApproval(Long userId) {
+		LOGGER.info("Entry :: PendingReuestServiceImpl :: getAllPendingRequests():" + userId);
+		Optional<User> optional = userRepository.findByUserId(userId);
 		String response=null;
 		if (optional.isPresent()) {
-			User user=optional.get();
-			userRepository.deleteById(user.getUserId());
+			userRepository.deleteById(userId);
 			response=ServiceConstants.USER_REJECTED;
 		}
 		return response;

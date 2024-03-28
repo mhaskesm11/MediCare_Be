@@ -2,13 +2,25 @@ package com.pharma.medicare.request;
 
 public class UserSignupRequest {
 	
+	private String firstName;
+	private String lastName;
 	private String userName;
 	private String password;
-	private String mode;
-	private String fullName;
 	private String contactNumber;
 	private String email;
 	private boolean approved;
+	public String getFirstName() {
+		return firstName;
+	}
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 	public String getUserName() {
 		return userName;
 	}
@@ -20,18 +32,6 @@ public class UserSignupRequest {
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	public String getMode() {
-		return mode;
-	}
-	public void setMode(String mode) {
-		this.mode = mode;
-	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
 	}
 	public String getContactNumber() {
 		return contactNumber;
@@ -53,9 +53,9 @@ public class UserSignupRequest {
 	}
 	@Override
 	public String toString() {
-		return "UserSignupRequest [userName=" + userName + ", password=" + password + ", mode=" + mode + ", fullName="
-				+ fullName + ", contactNumber=" + contactNumber + ", email=" + email + ", approved=" + approved + "]";
+		return "UserSignupRequest [firstName=" + firstName + ", lastName=" + lastName + ", userName=" + userName
+				+ ", password=" + password + ", contactNumber=" + contactNumber + ", email=" + email + ", approved="
+				+ approved + "]";
 	}
-	
 	
 }

@@ -1,15 +1,15 @@
 package com.pharma.medicare.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "txn_user")
-public class User {
+public class User extends AuditEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,25 +17,25 @@ public class User {
 	private Long userId;
 
 	@Column(name = "user_name")
-	String userName;
+	private String userName;
 
 	@Column(name = "password")
-	String password;
+	private String password;
 
 	@Column(name = "mode")
-	String mode;
+	private String mode;
 
 	@Column(name = "full_name")
-	String fullName;
+	private String fullName;
 
 	@Column(name = "contact_number")
-	String contactNumber;
+	private String contactNumber;
 
 	@Column(name = "email")
-	String email;
+	private String email;
 
 	@Column(name = "approved")
-	boolean approved;
+	private boolean approved;
 
 	public Long getUserId() {
 		return userId;
@@ -107,5 +107,7 @@ public class User {
 				+ ", fullName=" + fullName + ", contactNumber=" + contactNumber + ", email=" + email + ", approved="
 				+ approved + "]";
 	}
+
+	
 	
 }

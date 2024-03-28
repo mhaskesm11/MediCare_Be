@@ -1,7 +1,8 @@
 package com.pharma.medicare.request;
 
 public interface PendingRequest {
-    String getFullname();
-	String getUsername();
+	Long getUserId();
+    String getFullName();
+	String getUserName();
     String getMode();
 }

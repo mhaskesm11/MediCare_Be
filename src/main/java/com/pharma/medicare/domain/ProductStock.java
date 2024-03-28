@@ -1,15 +1,15 @@
 package com.pharma.medicare.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "txn_product_stock")
-public class ProductStock {
+public class ProductStock extends AuditEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,9 @@ public class ProductStock {
 	
 	@Column(name = "product_name")
 	private String productName;
+	
+	@Column(name = "company_name")
+	private String companyName;
 	
 	@Column(name = "quantity")
 	private Long quantity;
@@ -41,6 +44,14 @@ public class ProductStock {
 		this.productName = productName;
 	}
 
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
 	public Long getQuantity() {
 		return quantity;
 	}
@@ -59,10 +70,7 @@ public class ProductStock {
 
 	@Override
 	public String toString() {
-		return "ProductStock [productId=" + productId + ", productName=" + productName + ", quantity=" + quantity
-				+ ", price=" + price + "]";
+		return "ProductStock [productId=" + productId + ", productName=" + productName + ", companyName=" + companyName
+				+ ", quantity=" + quantity + ", price=" + price + "]";
 	}
-
-
-
 }

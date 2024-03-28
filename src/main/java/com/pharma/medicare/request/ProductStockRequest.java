@@ -3,6 +3,7 @@ package com.pharma.medicare.request;
 public class ProductStockRequest {
 
 	private String productName;
+	private String companyName;
 	private Long quantity;
 	private Double price;
 	public String getProductName() {
@@ -10,6 +11,12 @@ public class ProductStockRequest {
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 	public Long getQuantity() {
 		return quantity;
@@ -25,7 +32,8 @@ public class ProductStockRequest {
 	}
 	@Override
 	public String toString() {
-		return "ProductStockRequest [productName=" + productName + ", quantity=" + quantity + ", price=" + price + "]";
+		return "ProductStockRequest [productName=" + productName + ", companyName=" + companyName + ", quantity="
+				+ quantity + ", price=" + price + "]";
 	}
 	
 }
