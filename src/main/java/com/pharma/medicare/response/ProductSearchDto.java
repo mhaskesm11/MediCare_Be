@@ -8,6 +8,7 @@ public class ProductSearchDto {
 	private String productName;
 	private String companyName;
 	private Long quantity;
+	private Date expDate;
 	private Double price;
 	private String createdBy;
 	private Date createdDate;
@@ -24,6 +25,12 @@ public class ProductSearchDto {
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+	public Date getExpDate() {
+		return expDate;
+	}
+	public void setExpDate(Date expDate) {
+		this.expDate = expDate;
 	}
 	public String getCompanyName() {
 		return companyName;
@@ -70,8 +77,9 @@ public class ProductSearchDto {
 	@Override
 	public String toString() {
 		return "ProductSearchDto [productId=" + productId + ", productName=" + productName + ", companyName="
-				+ companyName + ", quantity=" + quantity + ", price=" + price + ", createdBy=" + createdBy
-				+ ", createdDate=" + createdDate + ", updatedBy=" + updatedBy + ", updatedDate=" + updatedDate + "]";
+				+ companyName + ", quantity=" + quantity + ", expDate=" + expDate + ", price=" + price + ", createdBy="
+				+ createdBy + ", createdDate=" + createdDate + ", updatedBy=" + updatedBy + ", updatedDate="
+				+ updatedDate + "]";
 	}
-
+	
 }

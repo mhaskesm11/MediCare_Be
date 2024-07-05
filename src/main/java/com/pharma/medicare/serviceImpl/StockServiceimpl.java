@@ -20,6 +20,7 @@ import com.pharma.medicare.request.ProductStockRequest;
 import com.pharma.medicare.response.ProductSearchDto;
 import com.pharma.medicare.response.ProductSearchResponse;
 import com.pharma.medicare.service.StockService;
+import com.pharma.medicare.utility.CommonUtil;
 
 @Service
 public class StockServiceimpl implements StockService {
@@ -44,32 +45,38 @@ public class StockServiceimpl implements StockService {
 			StringBuilder stringBuilder=new StringBuilder();
 			ProductSearchResponse productSearchResponse=new ProductSearchResponse();
 			
-			if(productSearchRequest.getProductName()!=null && !productSearchRequest.getProductName().isEmpty())
-			{
-				stringBuilder.append(" tps.product_name like ");
-				stringBuilder.append("'%" + productSearchRequest.getProductName() +"%'");
-				stringBuilder.append(" And");
+			CommonUtil.checkAppendConditionForStringField(stringBuilder, "tps.product_name", productSearchRequest.getProductName());
+			CommonUtil.checkAppendConditionForStringField(stringBuilder, "tps.company_name", productSearchRequest.getCompanyName());
+			CommonUtil.checkAppendConditionForStringField(stringBuilder, "tps.created_by", productSearchRequest.getCreatedBy());
+			CommonUtil.checkAppendConditionForDateField(stringBuilder, "tps.created_date", productSearchRequest.getCreatedDate());
 			
-			}
-			if(productSearchRequest.getCompanyName()!=null && !productSearchRequest.getCompanyName().isEmpty())
-			{
-				stringBuilder.append(" tps.company_name like ");
-				stringBuilder.append("'%" + productSearchRequest.getCompanyName() +"%'");
-				stringBuilder.append(" And");
-			}
 			
-			if(productSearchRequest.getCreatedBy()!=null && !productSearchRequest.getCreatedBy().isEmpty())
-			{
-				stringBuilder.append(" tps.created_by like ");
-				stringBuilder.append("'%" + productSearchRequest.getCreatedBy() +"%'");
-				stringBuilder.append(" And");			
-			}
-			if(productSearchRequest.getCreatedDate()!=null && !productSearchRequest.getCreatedDate().isEmpty())
-			{
-				stringBuilder.append(" to_char(tps.created_date,'yyyy-mm-dd') like ");
-				stringBuilder.append("'%" + productSearchRequest.getCreatedDate() +"%'");
-				stringBuilder.append(" And");
-			}
+//			if(productSearchRequest.getProductName()!=null && !productSearchRequest.getProductName().isEmpty())
+//			{
+//				stringBuilder.append(" tps.product_name like ");
+//				stringBuilder.append("'%" + productSearchRequest.getProductName() +"%'");
+//				stringBuilder.append(" And");
+//			
+//			}
+//			if(productSearchRequest.getCompanyName()!=null && !productSearchRequest.getCompanyName().isEmpty())
+//			{
+//				stringBuilder.append(" tps.company_name like ");
+//				stringBuilder.append("'%" + productSearchRequest.getCompanyName() +"%'");
+//				stringBuilder.append(" And");
+//			}
+//			
+//			if(productSearchRequest.getCreatedBy()!=null && !productSearchRequest.getCreatedBy().isEmpty())
+//			{
+//				stringBuilder.append(" tps.created_by like ");
+//				stringBuilder.append("'%" + productSearchRequest.getCreatedBy() +"%'");
+//				stringBuilder.append(" And");			
+//			}
+//			if(productSearchRequest.getCreatedDate()!=null && !productSearchRequest.getCreatedDate().isEmpty())
+//			{
+//				stringBuilder.append(" to_char(tps.created_date,'yyyy-mm-dd') like ");
+//				stringBuilder.append("'%" + productSearchRequest.getCreatedDate() +"%'");
+//				stringBuilder.append(" And");
+//			}
 			
 			int pagecount = productSearchRequest.getPage() - 1;
 			int offset = pagecount * productSearchRequest.getLimit();
@@ -133,6 +140,7 @@ public class StockServiceimpl implements StockService {
 		product.setProductName(rs.getString("product_name"));
 		product.setCompanyName(rs.getString("company_name"));
 		product.setQuantity(rs.getLong("quantity"));
+		product.setExpDate(rs.getDate("exp_date"));
 		product.setPrice(rs.getDouble("price"));
 		product.setCreatedBy(rs.getString("created_by"));
 		product.setCreatedDate(rs.getDate("created_date"));
@@ -150,11 +158,13 @@ public class StockServiceimpl implements StockService {
 		if (optional.isPresent()) {
 			stock = optional.get();
 			stock.setQuantity(stock.getQuantity() + productStockRequest.getQuantity());
+			stock.setIsActive(ServiceConstants.Y);
 			productStockRepository.save(stock);
 			LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_UPDATED);
 			return ServiceConstants.STOCK_UPDATED;
 		} else {
 			BeanUtils.copyProperties(productStockRequest, stock);
+			stock.setIsActive(ServiceConstants.Y);
 			productStockRepository.save(stock);
 			LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED);
 			return ServiceConstants.STOCK_ADDED;

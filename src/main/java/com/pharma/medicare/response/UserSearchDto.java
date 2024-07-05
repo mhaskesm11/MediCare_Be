@@ -3,7 +3,8 @@ package com.pharma.medicare.response;
 public class UserSearchDto {
 	
 	private Long userId;
-	private String fullName;
+	private String firstName;
+	private String lastName;
 	private String contactNumber;
 	private String userName;
 	private String email;
@@ -15,11 +16,17 @@ public class UserSearchDto {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	public String getFullName() {
-		return fullName;
+	public String getFirstName() {
+		return firstName;
 	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	public String getContactNumber() {
 		return contactNumber;
@@ -53,9 +60,9 @@ public class UserSearchDto {
 	}
 	@Override
 	public String toString() {
-		return "UserSearchDto [userId=" + userId + ", fullName=" + fullName + ", contactNumber=" + contactNumber
-				+ ", userName=" + userName + ", email=" + email + ", mode=" + mode + ", approved=" + approved + "]";
+		return "UserSearchDto [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", contactNumber=" + contactNumber + ", userName=" + userName + ", email=" + email + ", mode=" + mode
+				+ ", approved=" + approved + "]";
 	}
-	
-	
+		
 }

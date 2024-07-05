@@ -32,6 +32,7 @@ import com.pharma.medicare.response.UserSearchDto;
 import com.pharma.medicare.response.UserSearchResponse;
 import com.pharma.medicare.response.UserSignupResponse;
 import com.pharma.medicare.service.UserService;
+import com.pharma.medicare.utility.CommonUtil;
 
 @Service
 public class UserServiceImpl implements UserService,UserDetailsService {
@@ -105,7 +106,8 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			User user = new User();
 			BeanUtils.copyProperties(userRequest, user);
 			user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
-			user.setFullName(userRequest.getFirstName() + " " + userRequest.getLastName());
+			user.setFirstName(userRequest.getFirstName());
+			user.setLastName(userRequest.getLastName());
 			user.setApproved(false);
 			user.setIsActive("Y");
 			user.setCreatedBy("SELF");
@@ -165,38 +167,44 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		StringBuilder stringBuilder=new StringBuilder();
 		UserSearchResponse UserSearchResponse=new UserSearchResponse();
 		
-		if(searchUserRequest.getFirstName()!=null && !searchUserRequest.getFirstName().isEmpty())
-		{
-			stringBuilder.append(" tu.full_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getFirstName() +"%'");
-			stringBuilder.append(" And");
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.first_name", searchUserRequest.getFirstName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.last_name", searchUserRequest.getLastName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.user_name", searchUserRequest.getUserName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.email", searchUserRequest.getEmail());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.contact_number", searchUserRequest.getContactNumber());
 		
-		}
-		if(searchUserRequest.getLastName()!=null && !searchUserRequest.getLastName().isEmpty())
-		{
-			stringBuilder.append(" tu.full_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getLastName() +"%'");
-			stringBuilder.append(" And");
-		}
-		
-		if(searchUserRequest.getUserName()!=null && !searchUserRequest.getUserName().isEmpty())
-		{
-			stringBuilder.append(" tu.user_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getUserName() +"%'");
-			stringBuilder.append(" And");			
-		}
-		if(searchUserRequest.getEmail()!=null && !searchUserRequest.getEmail().isEmpty())
-		{
-			stringBuilder.append(" tu.email like ");
-			stringBuilder.append("'%" + searchUserRequest.getEmail() +"%'");
-			stringBuilder.append(" And");
-		}
-		if(searchUserRequest.getContactNumber()!=null && !searchUserRequest.getContactNumber().isEmpty())
-		{
-			stringBuilder.append(" tu.contact_number like ");
-			stringBuilder.append("'%" + searchUserRequest.getContactNumber() +"%'");
-			stringBuilder.append(" And");
-		}
+//		if(searchUserRequest.getFirstName()!=null && !searchUserRequest.getFirstName().isEmpty())
+//		{
+//			stringBuilder.append(" tu.full_name like ");
+//			stringBuilder.append("'%" + searchUserRequest.getFirstName() +"%'");
+//			stringBuilder.append(" And");
+//		
+//		}
+//		if(searchUserRequest.getLastName()!=null && !searchUserRequest.getLastName().isEmpty())
+//		{
+//			stringBuilder.append(" tu.full_name like ");
+//			stringBuilder.append("'%" + searchUserRequest.getLastName() +"%'");
+//			stringBuilder.append(" And");
+//		}
+//		
+//		if(searchUserRequest.getUserName()!=null && !searchUserRequest.getUserName().isEmpty())
+//		{
+//			stringBuilder.append(" tu.user_name like ");
+//			stringBuilder.append("'%" + searchUserRequest.getUserName() +"%'");
+//			stringBuilder.append(" And");			
+//		}
+//		if(searchUserRequest.getEmail()!=null && !searchUserRequest.getEmail().isEmpty())
+//		{
+//			stringBuilder.append(" tu.email like ");
+//			stringBuilder.append("'%" + searchUserRequest.getEmail() +"%'");
+//			stringBuilder.append(" And");
+//		}
+//		if(searchUserRequest.getContactNumber()!=null && !searchUserRequest.getContactNumber().isEmpty())
+//		{
+//			stringBuilder.append(" tu.contact_number like ");
+//			stringBuilder.append("'%" + searchUserRequest.getContactNumber() +"%'");
+//			stringBuilder.append(" And");
+//		}
 		
 		int pagecount = searchUserRequest.getPage() - 1;
 		int offset = pagecount * searchUserRequest.getLimit();
@@ -206,12 +214,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		{
 			if (searchUserRequest.getOrderBy().equalsIgnoreCase("firstName"))
 			{
-				offSetQuery = " ORDER BY tu.full_name " + searchUserRequest.getOrderDirection() + " LIMIT "
+				offSetQuery = " ORDER BY tu.first_name " + searchUserRequest.getOrderDirection() + " LIMIT "
 						+ offset + " , " + searchUserRequest.getLimit() ;
 			} 
 			else if (searchUserRequest.getOrderBy().equalsIgnoreCase("lastName"))
 			{
-				offSetQuery = " ORDER BY tu.full_name " + searchUserRequest.getOrderDirection() + " LIMIT "
+				offSetQuery = " ORDER BY tu.last_name " + searchUserRequest.getOrderDirection() + " LIMIT "
 						+ offset + " , " + searchUserRequest.getLimit() ;
 			} 
 			else if (searchUserRequest.getOrderBy().equalsIgnoreCase("user_name"))
@@ -262,7 +270,8 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	private UserSearchDto userMapFields(ResultSet rs) throws SQLException {
 		UserSearchDto user=new UserSearchDto();
 		user.setUserId(rs.getLong("user_id"));
-		user.setFullName(rs.getString("full_name"));
+		user.setFirstName(rs.getString("first_name"));
+		user.setLastName(rs.getString("last_name"));
 		user.setUserName(rs.getString("user_name"));
 		user.setContactNumber(rs.getString("contact_number"));
 		user.setEmail(rs.getString("email"));
@@ -279,8 +288,8 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			if (optional.isPresent()) {
 				user = optional.get();
 			}
-
-			user.setFullName(userRequest.getFirstName() + " " + userRequest.getLastName());
+			user.setFirstName(userRequest.getFirstName());
+			user.setLastName(userRequest.getLastName());
 			user.setUserName(userRequest.getUserName());
 			if (userRequest.getPassword() != null && userRequest.getPassword().isEmpty()) {
 				user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
