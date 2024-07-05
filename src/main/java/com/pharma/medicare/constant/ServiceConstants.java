@@ -8,6 +8,8 @@ public class ServiceConstants {
 	
 	public static final String RESPONSE = "Response : Payload: %s";
 	
+	public static final String Y ="Y";
+	
 	public static final String  SOME_THING_WENT_WRONG="Some Thing Went Wrong";
 	
 	public static final String LOGIN_SUCCESSFUL ="Login Successful";
