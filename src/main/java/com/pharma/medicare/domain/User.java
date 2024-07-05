@@ -25,8 +25,11 @@ public class User extends AuditEntity {
 	@Column(name = "mode")
 	private String mode;
 
-	@Column(name = "full_name")
-	private String fullName;
+	@Column(name = "first_name")
+	private String firstName;
+	
+	@Column(name = "last_name")
+	private String lastName;
 
 	@Column(name = "contact_number")
 	private String contactNumber;
@@ -69,12 +72,20 @@ public class User extends AuditEntity {
 		this.mode = mode;
 	}
 
-	public String getFullName() {
-		return fullName;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getContactNumber() {
@@ -104,10 +115,9 @@ public class User extends AuditEntity {
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", userName=" + userName + ", password=" + password + ", mode=" + mode
-				+ ", fullName=" + fullName + ", contactNumber=" + contactNumber + ", email=" + email + ", approved="
-				+ approved + "]";
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", contactNumber=" + contactNumber
+				+ ", email=" + email + ", approved=" + approved + "]";
 	}
 
-	
-	
+		
 }
