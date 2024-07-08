@@ -42,13 +42,17 @@ public class ServiceConstants {
 
 	public static final String USER_PASSWORD_NOT_MODIFIED = "User Password Not Modified";
 
-	public static final String USER_ADDED_SUCCESSFULLY = "User Added/Modified Successfully.";
+	public static final String USER_ADDED_SUCCESSFULLY = "User Added / Modified Successfully.";
 	
 	public static final String USER_NOT_ADDED = "User Not Added/Modified.";
 
 	public static final String USER_DELETED_SUCCESSFULLY = "User Deleted Successfully";
 
 	public static final String USER_NOT_DELETED = "User Not Deleted ";
+
+	public static final String CUSTOMER_ADDED_SUCESSFULLY = "Customer Added / Modified Successfully.";
+	
+	public static final String CUSTOMER_NOT_ADDED = "Customer Not Added / Modified.";
 	
 
 }
