@@ -6,12 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.constant.ServiceConstants;
+import com.pharma.medicare.domain.CustomerDetails;
 import com.pharma.medicare.request.BillingDataRequest;
+import com.pharma.medicare.request.CustomerBillRequest;
+import com.pharma.medicare.request.CustomerRequest;
 import com.pharma.medicare.service.BillingService;
 import com.pharma.medicare.utility.CommonUtil;
 
@@ -68,5 +72,40 @@ public class BillingController {
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
 		return response;
 	}
+	
+	@PostMapping("addcustomer")
+	public String addCustomer(@RequestBody CustomerRequest customerRequest) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/addcustomer")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerRequest)));
+		String response = "";
+		try {
+			CustomerDetails optional = billingService.addCustomerDetails(customerRequest);
+			if(CommonUtil.isNotNull(optional)){
+				response=ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY;
+			}
+			else {
+				response=ServiceConstants.CUSTOMER_NOT_ADDED;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+	}
+	
+	@PostMapping("addcustomerbill")
+	public void addCustomerBillingDetail(@RequestBody CustomerBillRequest customerBillRequest) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/addcustomerbill")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillRequest)));
+		try {
+			 billingService.addCustomerBillDetails(customerBillRequest);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString("")));
+
+	}
+	
 
 }

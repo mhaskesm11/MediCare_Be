@@ -3,6 +3,7 @@ package com.pharma.medicare.utility;
 import java.sql.Date;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pharma.medicare.domain.CustomerDetails;
 
 public class CommonUtil {
 	
@@ -21,6 +22,13 @@ public class CommonUtil {
 
 		}
 		return value;
+	}
+	
+	public static boolean isNotNull(Object object) {
+		if(object!=null && !object.toString().isEmpty()) {
+			return true;
+		}
+		return false;
 	}
 	
 	public static Boolean isNotNull(String value) {
@@ -71,5 +79,8 @@ public class CommonUtil {
 	        stringBuilder.append(" And");
 	    }
 	}
+
+
+	
 
 }

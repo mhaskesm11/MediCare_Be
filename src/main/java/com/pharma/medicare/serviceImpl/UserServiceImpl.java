@@ -291,12 +291,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			user.setFirstName(userRequest.getFirstName());
 			user.setLastName(userRequest.getLastName());
 			user.setUserName(userRequest.getUserName());
-			if (userRequest.getPassword() != null && userRequest.getPassword().isEmpty()) {
+			if (userRequest.getPassword() != null && !userRequest.getPassword().isEmpty()) {
 				user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
 			}
 			user.setContactNumber(userRequest.getContactNumber());
 			user.setEmail(userRequest.getEmail());
-			user.setMode(userRequest.getMode().toUpperCase());
+			user.setMode("USER");
 
 			user.setApproved(true);
 			user.setIsActive("Y");
