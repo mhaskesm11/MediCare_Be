@@ -3,16 +3,11 @@ package com.pharma.medicare.utility;
 import java.sql.Date;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pharma.medicare.domain.CustomerDetails;
 
 public class CommonUtil {
 	
 	private static ObjectMapper mapper = new ObjectMapper();
-	public CommonUtil() 
-	{
-	
-    }
-	
+	public CommonUtil() {}	
 	
 	public static String getString(Object object) {
 		String value = "";
@@ -25,7 +20,7 @@ public class CommonUtil {
 	}
 	
 	public static boolean isNotNull(Object object) {
-		if(object!=null && !object.toString().isEmpty()) {
+		if(object!=null) {
 			return true;
 		}
 		return false;
@@ -51,6 +46,15 @@ public class CommonUtil {
 		}
 		return false;
 	}
+	
+	public static void checkAppendConditionForDateField(StringBuilder stringBuilder, String field,
+			String value) {
+		if (CommonUtil.isNotNull(value)) {
+	        stringBuilder.append(" DATE("+field).append(") = ");
+	        stringBuilder.append("'"+ value +"'" );
+	        stringBuilder.append(" And");
+	    }
+	}
 
 
 	public static void checkAppendConditionForStringField(StringBuilder stringBuilder, String field,
@@ -72,9 +76,9 @@ public class CommonUtil {
 	}
 	
 	public static void checkAppendConditionForDateField(StringBuilder stringBuilder, String field,
-			String value) {
+			Date value) {
 		if (CommonUtil.isNotNull(value)) {
-	        stringBuilder.append("DATE("+field).append(") = ");
+	        stringBuilder.append(" DATE("+field).append(") = ");
 	        stringBuilder.append("'"+ value +"'" );
 	        stringBuilder.append(" And");
 	    }

@@ -24,6 +24,8 @@ public class ServiceConstants {
 	
 	public static final String  STOCK_UPDATED="Stock updated Successfully";
 	
+	public static final String  STOCK_ADDED_UPDATED="Stock Added / Updated Successfully";
+	
 	public static final String  STOCK_EDITED="Stock edited Successfully";
 	
 	public static final String  STOCK_ADDED="Stock Added Successfully";
@@ -53,6 +55,44 @@ public class ServiceConstants {
 	public static final String CUSTOMER_ADDED_SUCESSFULLY = "Customer Added / Modified Successfully.";
 	
 	public static final String CUSTOMER_NOT_ADDED = "Customer Not Added / Modified.";
+	
+	public static final String HEADER_TITLE = "MediCare Purchase Invoice";
+	
+	public static final String HEADER_SPACE = "                         ";
+	
+	public static final String COMPANY_NAME ="Company Name";
+	
+	public static final String PRODUCT_NAME ="Product Name";
+	
+	public static final String EXP_DATE ="Exp. Date";
+	
+	public static final String QUANTITY ="Quantity";
+	
+	public static final String PRICE ="Price";
+	
+	public static final String TOTAL ="Total";
+
+	public static final String CUSTOMER_NAME ="Customer Name : ";
+	
+	public static final String INVOICE_NUMBER="Invoice Number : ";
+	
+	public static final String MOBILE_NUMBER="Mobile Number : ";
+	
+	public static final String INVOICE_DATE ="Invoice Date : ";
+	
+	public static final String ADDRESS="Address : ";
+	
+	public static final String TOTAL_AMOUNT_IN_WORD="Total Amount in Words : ";
+	
+	public static final String TOTAL_AMOUNT="Total Amount: ";
+	
+	public static final String AMOUNT_TYPE ="Amount Type : ";
+	
+	public static final String CUSTOMER_SIGN="Customer Signature";
+	
+	public static final String OWNER_SIGN="Owner Signature";
+	
+	public static final String COMPUTER_GENERATED_INVOICE="This is a computer-generated invoice and does not require a signature.";
 	
 
 }

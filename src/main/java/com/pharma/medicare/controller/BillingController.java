@@ -1,110 +1,93 @@
 package com.pharma.medicare.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.constant.ServiceConstants;
-import com.pharma.medicare.domain.CustomerDetails;
-import com.pharma.medicare.request.BillingDataRequest;
 import com.pharma.medicare.request.CustomerBillRequest;
-import com.pharma.medicare.request.CustomerRequest;
+import com.pharma.medicare.request.CustomerBillingRequests;
 import com.pharma.medicare.service.BillingService;
 import com.pharma.medicare.utility.CommonUtil;
+import com.pharma.medicare.utility.PdfBillGenerator;
 
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/bill")
-public class BillingController {
+public class BillingController extends BaseController {
 
 	private Logger LOGGER = LoggerFactory.getLogger(BillingController.class);
 
 	@Autowired
 	BillingService billingService;
-
-	// sale
-	@GetMapping("showsale{value}")
-	public Long getProductSales(@PathVariable Long value) {
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/showsale")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(value)));
-		Long response = null;
-		try {
-			response = billingService.getProductSale(value);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
-		return response;
-	}
-
-	// submit bill which is saved to DB
-	@GetMapping("submitbill")
-	public Long submitbill(@RequestBody BillingDataRequest billingDataRequest) {
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/submitbill")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(billingDataRequest)));
-		Long response = null;
-		try {
-			response = billingService.submitBillingDetails(billingDataRequest);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
-		return response;
-	}
-
-	@GetMapping("getprice{productName}")
-	public Double getProductPrice(@PathVariable String productName) {
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/getprice")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(productName)));
-		Double response = null;
-		try {
-			response = billingService.getProductPrice(productName);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
-		return response;
-	}
 	
-	@PostMapping("addcustomer")
-	public String addCustomer(@RequestBody CustomerRequest customerRequest) {
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/addcustomer")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerRequest)));
-		String response = "";
-		try {
-			CustomerDetails optional = billingService.addCustomerDetails(customerRequest);
-			if(CommonUtil.isNotNull(optional)){
-				response=ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY;
-			}
-			else {
-				response=ServiceConstants.CUSTOMER_NOT_ADDED;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
-		return response;
-	}
+	@Autowired(required = true)
+	PdfBillGenerator billGenerator;
+
 	
-	@PostMapping("addcustomerbill")
-	public void addCustomerBillingDetail(@RequestBody CustomerBillRequest customerBillRequest) {
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/addcustomerbill")));
-		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillRequest)));
+	@GetMapping("last-invoice-number")
+	public Long getLastInvoiceNumber() {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/last-invoice-number")));
+		Long response=0L;
 		try {
-			 billingService.addCustomerBillDetails(customerBillRequest);
+			response= billingService.getLastInvoiceNumber();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString("")));
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
 
+	}
+	
+	@PostMapping("addcustomerbill")
+	public String addCustomerBillingDetail(@RequestBody CustomerBillRequest customerBillRequest, HttpServletRequest request) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/addcustomerbill")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillRequest)));
+		String response="";
+		String userName = getUserNameFromHeader(request);
+		try {
+			response = billingService.addCustomerBillDetails(customerBillRequest,userName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+//	this controller are used for to generate the pdf.
+	@PostMapping(value = "/generate-pdf")
+	public ResponseEntity<String> generatePdf(@RequestBody CustomerBillingRequests customerBillingRequests,
+			HttpServletRequest request) {
+
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/generate-pdf")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillingRequests)));
+
+		String userName = getUserNameFromHeader(request);
+		if (CommonUtil.isNotNull(customerBillingRequests.getMaterialSellingDetails())
+				&& CommonUtil.isNotNull(customerBillingRequests.getCustomerName())) {
+			billingService.modifiedProductStockAfterSelling(customerBillingRequests.getMaterialSellingDetails(),
+					userName);
+		}
+
+		String base64String = billGenerator.generatePdf(customerBillingRequests, userName);
+		String pdfFileName = billGenerator.createPdfName(customerBillingRequests);
+		System.out.println(pdfFileName);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Disposition", "inline; filename=\"" + pdfFileName + "\"");
+		return new ResponseEntity<>(base64String, headers, HttpStatus.OK);
 	}
 	
 

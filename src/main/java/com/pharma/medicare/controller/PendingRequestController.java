@@ -2,6 +2,8 @@ package com.pharma.medicare.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import com.pharma.medicare.utility.CommonUtil;
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/pending-req")
-public class PendingRequestController {
+public class PendingRequestController extends BaseController{
 
 	private Logger LOGGER = LoggerFactory.getLogger(PendingRequestController.class);
 
@@ -43,13 +45,14 @@ public class PendingRequestController {
 
 	// Approved pending requests
 	@GetMapping("giveapproval/{userId}")
-	public String giveUserApproval(@PathVariable Long userId) {
+	public String giveUserApproval(@PathVariable Long userId, HttpServletRequest request) {
 		LOGGER.info(
 				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/giveapproval")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userId)));
 		String response = null;
 		try {
-			response = pendingReuestService.giveUserApproval(userId);
+			String userName=getUserNameFromHeader(request);
+			response = pendingReuestService.giveUserApproval(userId,userName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,7 +62,7 @@ public class PendingRequestController {
 	}
 
 	// Reject pending requests
-	@RequestMapping("rejectapproval/{userId}")
+	@GetMapping("rejectapproval/{userId}")
 	public String rejectUserApproval(@PathVariable Long userId) {
 		LOGGER.info(
 				String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/pending-req/rejectapproval")));
