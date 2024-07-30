@@ -1,5 +1,7 @@
 package com.pharma.medicare.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ import com.pharma.medicare.utility.CommonUtil;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("api/v1/user")
-public class UserController {
+public class UserController extends BaseController {
 
 	private Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -37,7 +39,7 @@ public class UserController {
 	UserService userService;
 
 	// signup new user
-	@RequestMapping("signup")
+	@PostMapping("signup")
 	public UserSignupResponse signup(@RequestBody UserSignupRequest userRequest) {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/signup")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userRequest)));
@@ -86,13 +88,14 @@ public class UserController {
 
 	// password changes save window
 	@PostMapping("update/password")
-	public String userPasswordChangeSave(@RequestBody UpdatePassWordRequest updatePassWordRequest) {
+	public String userPasswordChangeSave(@RequestBody UpdatePassWordRequest updatePassWordRequest,HttpServletRequest request) {
 
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/update/password")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(updatePassWordRequest)));
 		String response = null;
 		try {
-			response = userService.userPasswordChangeSave(updatePassWordRequest);
+			String userName=getUserNameFromHeader(request);
+			response = userService.userPasswordChangeSave(updatePassWordRequest,userName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -119,12 +122,13 @@ public class UserController {
 	
 	// add user (add user window)
 	@PostMapping("save/user")
-	public String addUserDetails(@RequestBody UserRequest userRequest) {
+	public String addUserDetails(@RequestBody UserRequest userRequest, HttpServletRequest request) {
 
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/login")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userRequest)));
 		String response = null;
-		User user = userService.addUserDetails(userRequest);
+		String userName=getUserNameFromHeader(request);
+		User user = userService.addUserDetails(userRequest, userName);
 		if (user != null) {
 			response = ServiceConstants.USER_ADDED_SUCCESSFULLY;
 		} else {

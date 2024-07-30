@@ -50,34 +50,6 @@ public class StockServiceimpl implements StockService {
 			CommonUtil.checkAppendConditionForStringField(stringBuilder, "tps.created_by", productSearchRequest.getCreatedBy());
 			CommonUtil.checkAppendConditionForDateField(stringBuilder, "tps.created_date", productSearchRequest.getCreatedDate());
 			
-			
-//			if(productSearchRequest.getProductName()!=null && !productSearchRequest.getProductName().isEmpty())
-//			{
-//				stringBuilder.append(" tps.product_name like ");
-//				stringBuilder.append("'%" + productSearchRequest.getProductName() +"%'");
-//				stringBuilder.append(" And");
-//			
-//			}
-//			if(productSearchRequest.getCompanyName()!=null && !productSearchRequest.getCompanyName().isEmpty())
-//			{
-//				stringBuilder.append(" tps.company_name like ");
-//				stringBuilder.append("'%" + productSearchRequest.getCompanyName() +"%'");
-//				stringBuilder.append(" And");
-//			}
-//			
-//			if(productSearchRequest.getCreatedBy()!=null && !productSearchRequest.getCreatedBy().isEmpty())
-//			{
-//				stringBuilder.append(" tps.created_by like ");
-//				stringBuilder.append("'%" + productSearchRequest.getCreatedBy() +"%'");
-//				stringBuilder.append(" And");			
-//			}
-//			if(productSearchRequest.getCreatedDate()!=null && !productSearchRequest.getCreatedDate().isEmpty())
-//			{
-//				stringBuilder.append(" to_char(tps.created_date,'yyyy-mm-dd') like ");
-//				stringBuilder.append("'%" + productSearchRequest.getCreatedDate() +"%'");
-//				stringBuilder.append(" And");
-//			}
-			
 			int pagecount = productSearchRequest.getPage() - 1;
 			int offset = pagecount * productSearchRequest.getLimit();
 			
@@ -150,35 +122,42 @@ public class StockServiceimpl implements StockService {
 		}
 
 	@Override
-	public String addProductStock(ProductStockRequest productStockRequest) {
+	public String addProductStock(List<ProductStockRequest> productStockRequest,String userName) {
 		LOGGER.info("Entry :: StockServiceimpl :: addProductStock():" + productStockRequest);
-		ProductStock stock = new ProductStock();
-
-		Optional<ProductStock> optional = productStockRepository.getExistingStock(productStockRequest.getProductName());
-		if (optional.isPresent()) {
-			stock = optional.get();
-			stock.setQuantity(stock.getQuantity() + productStockRequest.getQuantity());
-			stock.setIsActive(ServiceConstants.Y);
-			productStockRepository.save(stock);
-			LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_UPDATED);
-			return ServiceConstants.STOCK_UPDATED;
-		} else {
-			BeanUtils.copyProperties(productStockRequest, stock);
-			stock.setIsActive(ServiceConstants.Y);
-			productStockRepository.save(stock);
-			LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED);
-			return ServiceConstants.STOCK_ADDED;
+		String response="" ;
+		for(int i=0;i<productStockRequest.size();i++) {
+			Optional<ProductStock> optional = productStockRepository.getExistingStock(productStockRequest.get(i).getProductName());
+			ProductStock stock = new ProductStock();
+			if (optional.isPresent()) {
+				stock = optional.get();
+				stock.setQuantity(stock.getQuantity() + productStockRequest.get(i).getQuantity());
+				stock.setUpdatedBy(userName);
+				stock.setIsActive(ServiceConstants.Y);
+				productStockRepository.save(stock);
+				LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_UPDATED);
+				 response=ServiceConstants.STOCK_ADDED_UPDATED;
+			} else {
+				BeanUtils.copyProperties( productStockRequest.get(i), stock);
+				stock.setCreatedBy(userName);
+				stock.setIsActive(ServiceConstants.Y);
+				productStockRepository.save(stock);
+				LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED);
+				 response=ServiceConstants.STOCK_ADDED_UPDATED ;
+			}
 		}
+		return response;
+		
 	}
 
 	@Override
-	public String editProductStock(ProductStockRequest productStockRequest) {
+	public String editProductStock(ProductStockRequest productStockRequest,String userName) {
 		LOGGER.info("Entry :: StockServiceimpl :: editProductStock():" + productStockRequest);
 		Optional<ProductStock> optional = productStockRepository
 				.findByProductName(productStockRequest.getProductName());
 
 		ProductStock stock = optional.get();
 		BeanUtils.copyProperties(productStockRequest, stock);
+		stock.setUpdatedBy(userName);
 		productStockRepository.save(stock);
 		LOGGER.info("Exit :: StockServiceimpl :: editProductStock():" + ServiceConstants.STOCK_EDITED);
 		return ServiceConstants.STOCK_EDITED;

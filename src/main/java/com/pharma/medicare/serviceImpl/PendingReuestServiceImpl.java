@@ -32,14 +32,15 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 	}
 
 	@Override
-	public String giveUserApproval(Long userId) {
+	public String giveUserApproval(Long userId,String userName) {
 		LOGGER.info("Entry :: PendingReuestServiceImpl :: getAllPendingRequests():" + userId);
 		Optional<User> optional = userRepository.findByUserId(userId);
 		String response=null;
 		if (optional.isPresent()) {
 			User user=optional.get();
 			user.setApproved(true);
-			user.setUpdatedBy("Pending work");
+			user.setCreatedBy(user.getUserName()+" (self)");
+			user.setUpdatedBy(userName);
 			userRepository.save(user);
 			response=ServiceConstants.USER_APPROVED;
 		}

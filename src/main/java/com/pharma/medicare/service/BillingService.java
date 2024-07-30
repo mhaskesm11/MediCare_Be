@@ -1,23 +1,19 @@
 package com.pharma.medicare.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import com.pharma.medicare.domain.CustomerDetails;
-import com.pharma.medicare.request.BillingDataRequest;
 import com.pharma.medicare.request.CustomerBillRequest;
-import com.pharma.medicare.request.CustomerRequest;
+import com.pharma.medicare.request.ProductSellingDetails;
 
 @Service
 public interface BillingService {
 
-	Long getProductSale(Long value);
+	String addCustomerBillDetails(CustomerBillRequest customerBillRequest,String UserName);
 
-	Long submitBillingDetails(BillingDataRequest billingDataRequest);
+	void modifiedProductStockAfterSelling(List<ProductSellingDetails> materialSellingDetails, String userName);
 
-	Double getProductPrice(String productName);
-
-	CustomerDetails addCustomerDetails(CustomerRequest customerRequest);
-
-	void addCustomerBillDetails(CustomerBillRequest customerBillRequest);
+	Long getLastInvoiceNumber();
 
 }

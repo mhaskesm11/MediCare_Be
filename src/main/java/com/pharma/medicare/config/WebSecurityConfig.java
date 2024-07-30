@@ -47,14 +47,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-
+	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf().disable()
-				.authorizeRequests().antMatchers("/api/v1/authenticate","/api/v1/user/signup","/api/v1/user/forgot/password/{email}","/api/v1/user/update/password").permitAll().
-				anyRequest().authenticated().and().
-				exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	    httpSecurity.csrf().disable()
+	        .authorizeRequests()
+	            .antMatchers(
+	                "/api/v1/authenticate",
+	                "/api/v1/user/signup",
+	                "/api/v1/user/forgot/password/{email}",
+	                "/api/v1/user/update/password"
+	            ).permitAll()
+	        .anyRequest().authenticated()
+	        .and()
+	        .exceptionHandling()
+	            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+	        .and()
+	        .sessionManagement()
+	            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+	    httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+
+	
 }

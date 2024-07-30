@@ -15,12 +15,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByUserName(String userName);
 	
-	@Query(value = "select user_id as userId, full_name as fullName,user_name as userName, mode as mode from txn_user where approved=FALSE",nativeQuery = true)
+	@Query(value = "select user_id as userId, first_name as firstName, last_name as lastName, user_name as userName, "
+			+ "contact_number as contactNumber, email as email from txn_user where approved=FALSE",nativeQuery = true)
 	List<PendingRequest> getAllPendingRequests();
 
 	Optional<User> findByUserId(Long userId);
 
 	Optional<User> findByEmail(String email);
+
+	@Query(value = "select * from txn_user",nativeQuery = true)
+	List<User> getAllUsers();
 	
 	
 

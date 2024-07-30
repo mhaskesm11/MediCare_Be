@@ -23,13 +23,13 @@ public interface UserService {
 
 	PasswordResponse forgotUserPassword(String email);
 
-	String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest);
+	String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest, String userName);
 
 	UserDetails loadUserByUsername(String username);
 
 	UserSearchResponse searchAllUsers(SearchUserRequest searchUserRequest);
 
-	User addUserDetails(UserRequest userRequest);
+	User addUserDetails(UserRequest userRequest, String userName);
 
 	Boolean deleteUserByUserId(Long userId);
 
