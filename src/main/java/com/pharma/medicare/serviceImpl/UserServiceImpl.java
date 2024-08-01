@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import com.pharma.medicare.response.UserSearchDto;
 import com.pharma.medicare.response.UserSearchResponse;
 import com.pharma.medicare.response.UserSignupResponse;
 import com.pharma.medicare.service.UserService;
+import com.pharma.medicare.utility.CommonUtil;
 
 @Service
 public class UserServiceImpl implements UserService,UserDetailsService {
@@ -95,29 +97,49 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		return loginResponse;
 
 	}
-
+	
 	@Override
 	public UserSignupResponse userSignup(UserSignupRequest userRequest) {
 
 		UserSignupResponse response = new UserSignupResponse();
-		Optional<User> optional = userRepository.findByUserName(userRequest.getUserName());
-		if (!optional.isPresent()) {
+		List<User> userList = userRepository.getAllUsers();
+		List<String> usernames = userList.stream()
+                .map(User :: getUserName)
+                .collect(Collectors.toList());
+		List<String> emails = userList.stream()
+                .map(User :: getEmail)
+                .collect(Collectors.toList());
+		List<String> contactNumbers = userList.stream()
+                .map(User :: getContactNumber)
+                .collect(Collectors.toList());
+		if(usernames.contains(userRequest.getUserName())) {
+			response.setStatus(false);
+			response.setStatusText("Signup Failed :: UserName Already Exists Try Other");
+		}else if(emails.contains(userRequest.getEmail())) {
+			response.setStatus(false);
+			response.setStatusText("Signup Failed ::"
+										+ " Email Already Exists Try Other");
+		}else if(contactNumbers.contains(userRequest.getContactNumber())) {
+			response.setStatus(false);
+			response.setStatusText("Signup Failed ::" 
+											+ " ContactNumber Already Exists Try Other");
+		}else {
 			User user = new User();
 			BeanUtils.copyProperties(userRequest, user);
 			user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
-			user.setFullName(userRequest.getFirstName() + " " + userRequest.getLastName());
+			user.setFirstName(userRequest.getFirstName());
+			user.setLastName(userRequest.getLastName());
 			user.setApproved(false);
-			user.setIsActive("Y");
-			user.setCreatedBy("SELF");
+			user.setIsActive("N");
+			user.setCreatedBy(userRequest.getUserName()+" (self)");
 			user.setMode("USER");
 			userRepository.save(user);
 			response.setStatus(true);
 			response.setStatusText("Signup Successful"
 					  + "Please wait for approval");
-		} else {
-			response.setStatus(false);
-			response.setStatusText("Signup Failed\nUser Already Exists");
+			
 		}
+		
 		return response;
 	}
 
@@ -136,12 +158,13 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	}
 
 	@Override
-	public String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest) {
+	public String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest, String userName) {
 		Optional<User> optional = userRepository.findByUserName(updatePassWordRequest.getUserName());
 		String response=null;
 		if(optional.isPresent()) {
 			User user=new User();
 			BeanUtils.copyProperties(optional.get(), user);
+			user.setUpdatedBy(userName);
 			user.setPassword(bcryptEncoder.encode(updatePassWordRequest.getNewPassword()));
 			userRepository.save(user);
 			response=ServiceConstants.USER_PASSWORD_MODIFIED;
@@ -165,38 +188,11 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		StringBuilder stringBuilder=new StringBuilder();
 		UserSearchResponse UserSearchResponse=new UserSearchResponse();
 		
-		if(searchUserRequest.getFirstName()!=null && !searchUserRequest.getFirstName().isEmpty())
-		{
-			stringBuilder.append(" tu.full_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getFirstName() +"%'");
-			stringBuilder.append(" And");
-		
-		}
-		if(searchUserRequest.getLastName()!=null && !searchUserRequest.getLastName().isEmpty())
-		{
-			stringBuilder.append(" tu.full_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getLastName() +"%'");
-			stringBuilder.append(" And");
-		}
-		
-		if(searchUserRequest.getUserName()!=null && !searchUserRequest.getUserName().isEmpty())
-		{
-			stringBuilder.append(" tu.user_name like ");
-			stringBuilder.append("'%" + searchUserRequest.getUserName() +"%'");
-			stringBuilder.append(" And");			
-		}
-		if(searchUserRequest.getEmail()!=null && !searchUserRequest.getEmail().isEmpty())
-		{
-			stringBuilder.append(" tu.email like ");
-			stringBuilder.append("'%" + searchUserRequest.getEmail() +"%'");
-			stringBuilder.append(" And");
-		}
-		if(searchUserRequest.getContactNumber()!=null && !searchUserRequest.getContactNumber().isEmpty())
-		{
-			stringBuilder.append(" tu.contact_number like ");
-			stringBuilder.append("'%" + searchUserRequest.getContactNumber() +"%'");
-			stringBuilder.append(" And");
-		}
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.first_name", searchUserRequest.getFirstName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.last_name", searchUserRequest.getLastName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.user_name", searchUserRequest.getUserName());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.email", searchUserRequest.getEmail());
+		CommonUtil.checkAppendConditionForStringField(stringBuilder, " tu.contact_number", searchUserRequest.getContactNumber());
 		
 		int pagecount = searchUserRequest.getPage() - 1;
 		int offset = pagecount * searchUserRequest.getLimit();
@@ -206,12 +202,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		{
 			if (searchUserRequest.getOrderBy().equalsIgnoreCase("firstName"))
 			{
-				offSetQuery = " ORDER BY tu.full_name " + searchUserRequest.getOrderDirection() + " LIMIT "
+				offSetQuery = " ORDER BY tu.first_name " + searchUserRequest.getOrderDirection() + " LIMIT "
 						+ offset + " , " + searchUserRequest.getLimit() ;
 			} 
 			else if (searchUserRequest.getOrderBy().equalsIgnoreCase("lastName"))
 			{
-				offSetQuery = " ORDER BY tu.full_name " + searchUserRequest.getOrderDirection() + " LIMIT "
+				offSetQuery = " ORDER BY tu.last_name " + searchUserRequest.getOrderDirection() + " LIMIT "
 						+ offset + " , " + searchUserRequest.getLimit() ;
 			} 
 			else if (searchUserRequest.getOrderBy().equalsIgnoreCase("user_name"))
@@ -262,7 +258,8 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	private UserSearchDto userMapFields(ResultSet rs) throws SQLException {
 		UserSearchDto user=new UserSearchDto();
 		user.setUserId(rs.getLong("user_id"));
-		user.setFullName(rs.getString("full_name"));
+		user.setFirstName(rs.getString("first_name"));
+		user.setLastName(rs.getString("last_name"));
 		user.setUserName(rs.getString("user_name"));
 		user.setContactNumber(rs.getString("contact_number"));
 		user.setEmail(rs.getString("email"));
@@ -272,27 +269,31 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		}
 
 		@Override
-		public User addUserDetails(UserRequest userRequest) {
+		public User addUserDetails(UserRequest userRequest,String userName) {
 			LOGGER.info("Entry :: UserServiceImpl :: addUserDetails():" + userRequest);
 			Optional<User> optional = userRepository.findByUserName(userRequest.getUserName());
 			User user = new User();
 			if (optional.isPresent()) {
 				user = optional.get();
+				user.setUpdatedBy(userName);
 			}
-
-			user.setFullName(userRequest.getFirstName() + " " + userRequest.getLastName());
+			user.setFirstName(userRequest.getFirstName());
+			user.setLastName(userRequest.getLastName());
 			user.setUserName(userRequest.getUserName());
-			if (userRequest.getPassword() != null && userRequest.getPassword().isEmpty()) {
+			user.setCreatedBy(userName);
+			if (userRequest.getPassword() != null && !userRequest.getPassword().isEmpty()) {
 				user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
 			}
 			user.setContactNumber(userRequest.getContactNumber());
 			user.setEmail(userRequest.getEmail());
-			user.setMode(userRequest.getMode().toUpperCase());
+			if(CommonUtil.isNotNull(userRequest.getMode())) {
+				user.setMode(userRequest.getMode().toUpperCase());
+			}else {
+				user.setMode("USER");
+			}
 
 			user.setApproved(true);
 			user.setIsActive("Y");
-			user.setCreatedBy("");
-			user.setUpdatedBy("");
 			userRepository.save(user);
 			return user;
 		}

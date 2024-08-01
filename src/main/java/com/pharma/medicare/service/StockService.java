@@ -1,5 +1,7 @@
 package com.pharma.medicare.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.request.ProductSearchRequest;
@@ -11,9 +13,9 @@ public interface StockService {
 
 	ProductSearchResponse getAllProductStock(ProductSearchRequest productSearchRequest);
 
-	String addProductStock(ProductStockRequest productStockRequest);
+	String addProductStock(List<ProductStockRequest> productStockRequest,String userName);
 
-	String editProductStock(ProductStockRequest productStockRequest);
+	String editProductStock(ProductStockRequest productStockRequest,String userName);
 
 	String deleteProductStock(Long productId);
 

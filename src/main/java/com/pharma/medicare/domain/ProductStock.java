@@ -1,5 +1,7 @@
 package com.pharma.medicare.domain;
 
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,6 +27,9 @@ public class ProductStock extends AuditEntity{
 	@Column(name = "quantity")
 	private Long quantity;
 	
+	@Column(name = "exp_date")
+	private Date expDate;
+	
 	@Column(name = "price")
 	private Double price;
 
@@ -46,6 +51,14 @@ public class ProductStock extends AuditEntity{
 
 	public String getCompanyName() {
 		return companyName;
+	}
+
+	public Date getExpDate() {
+		return expDate;
+	}
+
+	public void setExpDate(Date expDate) {
+		this.expDate = expDate;
 	}
 
 	public void setCompanyName(String companyName) {
@@ -71,6 +84,8 @@ public class ProductStock extends AuditEntity{
 	@Override
 	public String toString() {
 		return "ProductStock [productId=" + productId + ", productName=" + productName + ", companyName=" + companyName
-				+ ", quantity=" + quantity + ", price=" + price + "]";
+				+ ", quantity=" + quantity + ", expDate=" + expDate + ", price=" + price + "]";
 	}
+
+	
 }

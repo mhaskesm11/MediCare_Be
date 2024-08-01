@@ -27,6 +27,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -70,6 +71,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			}
 		}
 		chain.doFilter(request, response);
+	}
+
+
+	public String getUsernameFromToken(String token) {
+		
+		return jwtTokenUtil.getUsernameFromToken(token);
 	}
 
 }

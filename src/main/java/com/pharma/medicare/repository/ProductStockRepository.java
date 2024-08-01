@@ -28,7 +28,7 @@ public interface ProductStockRepository extends JpaRepository<ProductStock, Long
 
 	@Query(value = "select price from txn_product_stock where product_name=?1",nativeQuery = true)
 	Double getprice(String productName);
-
+	
 	Optional<ProductStock> findByProductName(String productName);
 
 	Optional<ProductStock> findByProductId(Long productId);

@@ -2,12 +2,13 @@ package com.pharma.medicare.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.constant.ServiceConstants;
-import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.request.ProductSearchRequest;
 import com.pharma.medicare.request.ProductStockRequest;
 import com.pharma.medicare.response.ProductSearchResponse;
@@ -26,7 +26,7 @@ import com.pharma.medicare.utility.CommonUtil;
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/stock")
-public class StockController {
+public class StockController extends BaseController {
 
 	private Logger LOGGER = LoggerFactory.getLogger(StockController.class);
 
@@ -49,12 +49,13 @@ public class StockController {
 
 	// add stock to existing stock
 	@PostMapping("addstock")
-	public String addProductStock(@RequestBody ProductStockRequest productStockRequest) {
+	public String addProductStock(@RequestBody List<ProductStockRequest> productStockRequest, HttpServletRequest reqest) {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/stock/addstock")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(productStockRequest)));
-		String response = null;
+		String response = "";
 		try {
-			response = stockService.addProductStock(productStockRequest);
+			String userName=getUserNameFromHeader(reqest);
+			response = stockService.addProductStock(productStockRequest,userName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -65,12 +66,13 @@ public class StockController {
 
 	// edit in stock
 	@PutMapping("editstock")
-	public String editProductStock(@RequestBody ProductStockRequest productStockRequest) {
+	public String editProductStock(@RequestBody ProductStockRequest productStockRequest,HttpServletRequest request) {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/stock/editstock")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(productStockRequest)));
 		String response = null;
 		try {
-			response = stockService.editProductStock(productStockRequest);
+			String userName=getUserNameFromHeader(request);
+			response = stockService.editProductStock(productStockRequest,userName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
