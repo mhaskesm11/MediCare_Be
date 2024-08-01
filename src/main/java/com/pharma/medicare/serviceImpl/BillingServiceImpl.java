@@ -1,5 +1,8 @@
 package com.pharma.medicare.serviceImpl;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +17,18 @@ import org.springframework.stereotype.Service;
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.domain.BillingDetails;
 import com.pharma.medicare.domain.CustomerDetails;
+import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.repository.BillingDetailRepository;
 import com.pharma.medicare.repository.CustomerDetailsRepository;
+import com.pharma.medicare.repository.PDFFileDataRepository;
 import com.pharma.medicare.repository.ProductStockRepository;
 import com.pharma.medicare.request.CustomerBillRequest;
+import com.pharma.medicare.request.CustomerBillingRequests;
+import com.pharma.medicare.request.PdfSaveRequest;
 import com.pharma.medicare.request.ProductSellingDetails;
 import com.pharma.medicare.service.BillingService;
+import com.pharma.medicare.utility.CommonUtil;
 
 @Service
 public class BillingServiceImpl implements BillingService {
@@ -35,6 +43,9 @@ public class BillingServiceImpl implements BillingService {
 	
 	@Autowired
 	BillingDetailRepository billingDetailRepository;
+	
+	@Autowired
+	PDFFileDataRepository pdfFileSaveRepository;
 
 //	@Override
 //	public Long getProductSale(Long value) {
@@ -121,4 +132,50 @@ public class BillingServiceImpl implements BillingService {
 			
 	}
 
+	@Override
+	public String saveGeneratedPdfFile(PdfSaveRequest pdfSaveRequest, String userName) {
+
+		String response = "";
+		try {
+			Optional<PDFFileDetails> optional = pdfFileSaveRepository
+					.getByInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
+			PDFFileDetails fileDetails = new PDFFileDetails();
+
+			if (optional.isPresent()) {
+				PDFFileDetails pdfFileDetails = optional.get();
+				BeanUtils.copyProperties(pdfFileDetails, fileDetails);
+				fileDetails.setUpdatedBy(userName);
+				response = ServiceConstants.PDF_ALREADY_EXIST;
+			} else {
+
+				fileDetails.setBillingDate(Date.valueOf(LocalDate.now()));
+				fileDetails.setFileName(pdfSaveRequest.getFileName());
+				fileDetails.setInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
+				fileDetails.setCustomerName(pdfSaveRequest.getCustomerName());
+				fileDetails.setPaidType(pdfSaveRequest.getPaidType());
+				if (CommonUtil.isNotNull(pdfSaveRequest.getBase64String())) {
+					byte[] pdfData = converBase64StringIntoByteArray(pdfSaveRequest.getBase64String());
+					fileDetails.setPdfFileData(pdfData);
+				}
+				fileDetails.setCreatedBy(userName);
+				response = ServiceConstants.PDF_SAVE_SUCESSFULLY;
+			}
+			fileDetails.setIsActive("Y");
+			pdfFileSaveRepository.save(fileDetails);
+
+		} catch (Exception e) {
+			response = ServiceConstants.PDF_NOT_SAVED_EXIST;
+		}
+		System.out.println("response : "+response);
+		return response;
+	}
+
+	private byte[] converBase64StringIntoByteArray(String base64String) {
+		
+		byte[] pdfFile = Base64.getDecoder().decode(base64String);
+		
+		return pdfFile;
+		
+	}
+	
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.request.CustomerBillRequest;
 import com.pharma.medicare.request.CustomerBillingRequests;
+import com.pharma.medicare.request.PdfSaveRequest;
 import com.pharma.medicare.service.BillingService;
 import com.pharma.medicare.utility.CommonUtil;
 import com.pharma.medicare.utility.PdfBillGenerator;
@@ -88,6 +89,21 @@ public class BillingController extends BaseController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Disposition", "inline; filename=\"" + pdfFileName + "\"");
 		return new ResponseEntity<>(base64String, headers, HttpStatus.OK);
+	}
+	
+	@PostMapping("save-pdf")
+	public String savePdfFileDetails(@RequestBody PdfSaveRequest pdfSaveRequest, HttpServletRequest request) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/save-pdf")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(pdfSaveRequest)));
+		String response="";
+		String userName = getUserNameFromHeader(request);
+		try {
+			response = billingService.saveGeneratedPdfFile(pdfSaveRequest,userName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 
