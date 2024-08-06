@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.request.CustomerBillRequest;
 import com.pharma.medicare.request.CustomerBillingRequests;
+import com.pharma.medicare.request.PdfSaveRequest;
 import com.pharma.medicare.service.BillingService;
 import com.pharma.medicare.utility.CommonUtil;
 import com.pharma.medicare.utility.PdfBillGenerator;
@@ -76,11 +77,6 @@ public class BillingController extends BaseController {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillingRequests)));
 
 		String userName = getUserNameFromHeader(request);
-		if (CommonUtil.isNotNull(customerBillingRequests.getMaterialSellingDetails())
-				&& CommonUtil.isNotNull(customerBillingRequests.getCustomerName())) {
-			billingService.modifiedProductStockAfterSelling(customerBillingRequests.getMaterialSellingDetails(),
-					userName);
-		}
 
 		String base64String = billGenerator.generatePdf(customerBillingRequests, userName);
 		String pdfFileName = billGenerator.createPdfName(customerBillingRequests);
@@ -88,6 +84,25 @@ public class BillingController extends BaseController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Disposition", "inline; filename=\"" + pdfFileName + "\"");
 		return new ResponseEntity<>(base64String, headers, HttpStatus.OK);
+	}
+	
+	@PostMapping("save-pdf")
+	public String savePdfFileDetails(@RequestBody PdfSaveRequest pdfSaveRequest, HttpServletRequest request) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/bill/save-pdf")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(pdfSaveRequest)));
+		String response="";
+		String userName = getUserNameFromHeader(request);
+		if (CommonUtil.isNotNull(pdfSaveRequest.getProductSellingDetails())){
+			billingService.modifiedProductStockAfterSelling(pdfSaveRequest.getProductSellingDetails(),
+					userName);
+		}
+		try {
+			response = billingService.saveGeneratedPdfFile(pdfSaveRequest,userName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
 	
 

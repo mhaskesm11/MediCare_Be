@@ -84,6 +84,40 @@ public class CommonUtil {
 	    }
 	}
 
+	public static void checkAppendConditionForDateComparison(StringBuilder stringBuilder, String field,
+			String saleType) {
+		if(CommonUtil.isNotNull(saleType)) {
+			
+			if(saleType.equalsIgnoreCase("todaysSale")) {
+				 stringBuilder.append(" DATE("+field).append(") = ");
+			        stringBuilder.append(" CURDATE() " );
+			        stringBuilder.append(" And");
+				
+			}else if(saleType.equalsIgnoreCase("weeklySale")) {
+				 stringBuilder.append(" YEARWEEK("+field +", 1").append(") = ");
+			        stringBuilder.append("YEARWEEK(CURDATE(), 1) ");
+			        stringBuilder.append(" And");			        
+				
+			}else if(saleType.equalsIgnoreCase("monthlySale")) {
+				 stringBuilder.append(" YEAR("+field).append(") = ");
+			        stringBuilder.append("YEAR(CURDATE()) And MONTH("+ field +") = " );
+			        stringBuilder.append("MONTH(CURDATE()) ");
+			        stringBuilder.append(" And");
+				
+			}else if(saleType.equalsIgnoreCase("yearlySale")) {
+				 stringBuilder.append(" YEAR("+field).append(") = ");
+			        stringBuilder.append("YEAR(CURDATE()) " );
+			        stringBuilder.append(" And");
+				
+			}else if(saleType.equalsIgnoreCase("allSale")) {
+				 stringBuilder.append(" DATE("+field).append(")  ");
+			        stringBuilder.append(" And");
+				
+			}
+		}		
+		
+	}
+
 
 	
 

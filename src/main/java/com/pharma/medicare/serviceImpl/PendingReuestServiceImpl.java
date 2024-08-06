@@ -43,6 +43,8 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 			user.setUpdatedBy(userName);
 			userRepository.save(user);
 			response=ServiceConstants.USER_APPROVED;
+		}else {
+			response=ServiceConstants.USER_NOT_APPROVED;
 		}
 		LOGGER.info("Exit :: PendingReuestServiceImpl :: getAllPendingRequests():" + response);
 		return response;
@@ -56,6 +58,8 @@ public class PendingReuestServiceImpl implements PendingRequestService {
 		if (optional.isPresent()) {
 			userRepository.deleteById(userId);
 			response=ServiceConstants.USER_REJECTED;
+		}else {
+			response=ServiceConstants.USER_NOT_REJECTED;
 		}
 		return response;
 	}

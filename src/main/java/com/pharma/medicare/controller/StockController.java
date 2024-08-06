@@ -94,5 +94,7 @@ public class StockController extends BaseController {
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
 		return response;
 	}
+	
+	
 
 }

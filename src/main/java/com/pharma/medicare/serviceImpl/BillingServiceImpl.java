@@ -1,5 +1,8 @@
 package com.pharma.medicare.serviceImpl;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +17,17 @@ import org.springframework.stereotype.Service;
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.domain.BillingDetails;
 import com.pharma.medicare.domain.CustomerDetails;
+import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.repository.BillingDetailRepository;
 import com.pharma.medicare.repository.CustomerDetailsRepository;
+import com.pharma.medicare.repository.PDFFileDataRepository;
 import com.pharma.medicare.repository.ProductStockRepository;
 import com.pharma.medicare.request.CustomerBillRequest;
+import com.pharma.medicare.request.PdfSaveRequest;
 import com.pharma.medicare.request.ProductSellingDetails;
 import com.pharma.medicare.service.BillingService;
+import com.pharma.medicare.utility.CommonUtil;
 
 @Service
 public class BillingServiceImpl implements BillingService {
@@ -35,6 +42,9 @@ public class BillingServiceImpl implements BillingService {
 	
 	@Autowired
 	BillingDetailRepository billingDetailRepository;
+	
+	@Autowired
+	PDFFileDataRepository pdfFileSaveRepository;
 
 //	@Override
 //	public Long getProductSale(Long value) {
@@ -53,7 +63,7 @@ public class BillingServiceImpl implements BillingService {
 //	}	
 
 	@Override
-	public String addCustomerBillDetails(CustomerBillRequest customerBillRequest,String userName) {
+	public String addCustomerBillDetails(CustomerBillRequest customerBillRequest, String userName) {
 
 		LOGGER.info("Entry :: BillingServiceImpl :: addCustomerDetails():" + customerBillRequest);
 		BillingDetails billingDetails = new BillingDetails();
@@ -61,18 +71,24 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Optional<CustomerDetails> optional = customerDetailsRepository
 					.findByCustomerName(customerBillRequest.getCustomerName());
-			BeanUtils.copyProperties(customerBillRequest, billingDetails);
 			if (optional.isPresent()) {
 				billingDetails.setCustomerId(optional.get().getCustomerId());
 			}
-			billingDetails.setIsActive(ServiceConstants.Y);
-			billingDetails.setCreatedBy(userName);
-			billingDetails.setUpdatedBy(userName);
-			billingDetailRepository.save(billingDetails);
-			response = ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY;
 
+			Optional<BillingDetails> billDetails = billingDetailRepository
+					.getBillingDetailByInvoiceNumber(customerBillRequest.getInvoiceNumber());
+			if (billDetails.isPresent()) {
+				billingDetails = billDetails.get();
+				billingDetails.setUpdatedBy(userName);
+			} else {
+				BeanUtils.copyProperties(customerBillRequest, billingDetails);
+				billingDetails.setIsActive(ServiceConstants.Y);
+				billingDetails.setCreatedBy(userName);
+			}
+			response = ServiceConstants.CUSTOMER_BILL_ADDED_SUCESSFULLY;
+			billingDetailRepository.save(billingDetails);
 		} catch (Exception e) {
-			response = ServiceConstants.CUSTOMER_NOT_ADDED;
+			response = ServiceConstants.CUSTOMER_BILL_NOT_ADDED;
 		}
 		LOGGER.info("Exit :: BillingServiceImpl :: addCustomerDetails():" + billingDetails);
 		return response;
@@ -121,4 +137,50 @@ public class BillingServiceImpl implements BillingService {
 			
 	}
 
+	@Override
+	public String saveGeneratedPdfFile(PdfSaveRequest pdfSaveRequest, String userName) {
+
+		String response = "";
+		try {
+			Optional<PDFFileDetails> optional = pdfFileSaveRepository
+					.getPdfFileByInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
+			PDFFileDetails fileDetails = new PDFFileDetails();
+
+			if (optional.isPresent()) {
+				PDFFileDetails pdfFileDetails = optional.get();
+				BeanUtils.copyProperties(pdfFileDetails, fileDetails);
+				fileDetails.setUpdatedBy(userName);
+				response = ServiceConstants.PDF_ALREADY_EXIST;
+			} else {
+
+				fileDetails.setBillingDate(Date.valueOf(LocalDate.now()));
+				fileDetails.setFileName(pdfSaveRequest.getFileName());
+				fileDetails.setInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
+				fileDetails.setCustomerName(pdfSaveRequest.getCustomerName());
+				fileDetails.setPaidType(pdfSaveRequest.getPaidType());
+				if (CommonUtil.isNotNull(pdfSaveRequest.getBase64String())) {
+					byte[] pdfData = converBase64StringIntoByteArray(pdfSaveRequest.getBase64String());
+					fileDetails.setPdfFileData(pdfData);
+				}
+				fileDetails.setCreatedBy(userName);
+				response = ServiceConstants.PDF_SAVE_SUCESSFULLY;
+			}
+			fileDetails.setIsActive("Y");
+			pdfFileSaveRepository.save(fileDetails);
+
+		} catch (Exception e) {
+			response = ServiceConstants.PDF_NOT_SAVED_EXIST;
+		}
+		System.out.println("response : "+response);
+		return response;
+	}
+
+	private byte[] converBase64StringIntoByteArray(String base64String) {
+		
+		byte[] pdfFile = Base64.getDecoder().decode(base64String);
+		
+		return pdfFile;
+		
+	}
+	
 }

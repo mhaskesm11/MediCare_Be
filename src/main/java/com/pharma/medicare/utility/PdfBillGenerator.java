@@ -53,7 +53,6 @@ public class PdfBillGenerator {
 			addCustomerAndOwnerSign(document, out, writer);
 			document.close();
 			response=generateBase64CodeString(out.toByteArray());
-//			saveGeneratedPdfFile(customerBillingRequests,out.toByteArray(),userName);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,20 +85,6 @@ public class PdfBillGenerator {
 	        }
 			return null;
 	    }
-	
-	
-//	private void saveGeneratedPdfFile(CustomerBillingRequests customerBillingRequests, byte[] pdfData, String userName) {
-//		String fileName=createPdfName(customerBillingRequests);
-//		PDFFileDetails fileDetails=new PDFFileDetails();
-//		fileDetails.setBillingDate(Date.valueOf(LocalDate.now()));
-//		fileDetails.setFileName(fileName);
-//		fileDetails.setInvoiceNumber(customerBillingRequests.getInvoiceNumber());
-//		fileDetails.setCustomerName(customerBillingRequests.getCustomerName());
-//		fileDetails.setPaidType(customerBillingRequests.getAmountType());
-//		fileDetails.setPdfFileData(pdfData);
-//		fileDetails.setCreatedBy(userName);
-//		pdfFileSaveRepository.save(fileDetails);		
-//	}
 
 	public String createPdfName(CustomerBillingRequests customerBillingRequests) {
         String name="";

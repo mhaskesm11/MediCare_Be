@@ -125,25 +125,30 @@ public class StockServiceimpl implements StockService {
 	public String addProductStock(List<ProductStockRequest> productStockRequest,String userName) {
 		LOGGER.info("Entry :: StockServiceimpl :: addProductStock():" + productStockRequest);
 		String response="" ;
-		for(int i=0;i<productStockRequest.size();i++) {
-			Optional<ProductStock> optional = productStockRepository.getExistingStock(productStockRequest.get(i).getProductName());
-			ProductStock stock = new ProductStock();
-			if (optional.isPresent()) {
-				stock = optional.get();
-				stock.setQuantity(stock.getQuantity() + productStockRequest.get(i).getQuantity());
-				stock.setUpdatedBy(userName);
-				stock.setIsActive(ServiceConstants.Y);
-				productStockRepository.save(stock);
-				LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_UPDATED);
-				 response=ServiceConstants.STOCK_ADDED_UPDATED;
-			} else {
-				BeanUtils.copyProperties( productStockRequest.get(i), stock);
-				stock.setCreatedBy(userName);
-				stock.setIsActive(ServiceConstants.Y);
-				productStockRepository.save(stock);
-				LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED);
-				 response=ServiceConstants.STOCK_ADDED_UPDATED ;
+		try {
+			for(int i=0;i<productStockRequest.size();i++) {
+				Optional<ProductStock> optional = productStockRepository.getExistingStock(productStockRequest.get(i).getProductName());
+				ProductStock stock = new ProductStock();
+				if (optional.isPresent()) {
+					stock = optional.get();
+					stock.setQuantity(stock.getQuantity() + productStockRequest.get(i).getQuantity());
+					stock.setUpdatedBy(userName);
+					stock.setExpDate(productStockRequest.get(i).getExpDate());
+					stock.setIsActive(ServiceConstants.Y);
+					productStockRepository.save(stock);
+					LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED_UPDATED);
+					 response=ServiceConstants.STOCK_ADDED_UPDATED;
+				} else {
+					BeanUtils.copyProperties( productStockRequest.get(i), stock);
+					stock.setCreatedBy(userName);
+					stock.setIsActive(ServiceConstants.Y);
+					productStockRepository.save(stock);
+					LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED_UPDATED);
+					 response=ServiceConstants.STOCK_ADDED_UPDATED ;
+				}
 			}
+		} catch (Exception e) {
+			response=e.getMessage();
 		}
 		return response;
 		
@@ -152,15 +157,21 @@ public class StockServiceimpl implements StockService {
 	@Override
 	public String editProductStock(ProductStockRequest productStockRequest,String userName) {
 		LOGGER.info("Entry :: StockServiceimpl :: editProductStock():" + productStockRequest);
+		String response="";
 		Optional<ProductStock> optional = productStockRepository
 				.findByProductName(productStockRequest.getProductName());
-
-		ProductStock stock = optional.get();
-		BeanUtils.copyProperties(productStockRequest, stock);
-		stock.setUpdatedBy(userName);
-		productStockRepository.save(stock);
-		LOGGER.info("Exit :: StockServiceimpl :: editProductStock():" + ServiceConstants.STOCK_EDITED);
-		return ServiceConstants.STOCK_EDITED;
+		if(optional.isPresent()) {
+			ProductStock stock = optional.get();
+			BeanUtils.copyProperties(productStockRequest, stock);
+			stock.setUpdatedBy(userName);
+			productStockRepository.save(stock);
+			response=ServiceConstants.STOCK_EDITED;
+			LOGGER.info("Exit :: StockServiceimpl :: editProductStock():" + ServiceConstants.STOCK_EDITED);
+		}else {
+			response=ServiceConstants.STOCK_NOT_EDITED;
+		}
+		
+		return response;
 
 	}
 
