@@ -77,11 +77,6 @@ public class BillingController extends BaseController {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerBillingRequests)));
 
 		String userName = getUserNameFromHeader(request);
-		if (CommonUtil.isNotNull(customerBillingRequests.getMaterialSellingDetails())
-				&& CommonUtil.isNotNull(customerBillingRequests.getCustomerName())) {
-			billingService.modifiedProductStockAfterSelling(customerBillingRequests.getMaterialSellingDetails(),
-					userName);
-		}
 
 		String base64String = billGenerator.generatePdf(customerBillingRequests, userName);
 		String pdfFileName = billGenerator.createPdfName(customerBillingRequests);
@@ -97,6 +92,10 @@ public class BillingController extends BaseController {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(pdfSaveRequest)));
 		String response="";
 		String userName = getUserNameFromHeader(request);
+		if (CommonUtil.isNotNull(pdfSaveRequest.getProductSellingDetails())){
+			billingService.modifiedProductStockAfterSelling(pdfSaveRequest.getProductSellingDetails(),
+					userName);
+		}
 		try {
 			response = billingService.saveGeneratedPdfFile(pdfSaveRequest,userName);
 			

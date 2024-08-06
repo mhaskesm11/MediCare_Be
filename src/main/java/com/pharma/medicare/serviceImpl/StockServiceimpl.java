@@ -133,6 +133,7 @@ public class StockServiceimpl implements StockService {
 					stock = optional.get();
 					stock.setQuantity(stock.getQuantity() + productStockRequest.get(i).getQuantity());
 					stock.setUpdatedBy(userName);
+					stock.setExpDate(productStockRequest.get(i).getExpDate());
 					stock.setIsActive(ServiceConstants.Y);
 					productStockRepository.save(stock);
 					LOGGER.info("Exit :: StockServiceimpl :: addProductStock():" + ServiceConstants.STOCK_ADDED_UPDATED);

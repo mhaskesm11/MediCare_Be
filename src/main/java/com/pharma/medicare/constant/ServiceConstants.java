@@ -56,6 +56,10 @@ public class ServiceConstants {
 	
 	public static final String CUSTOMER_NOT_ADDED = "Customer Not Added / Modified.";
 	
+	public static final String CUSTOMER_BILL_ADDED_SUCESSFULLY = "Customer Bill Added Successfully.";
+	
+	public static final String CUSTOMER_BILL_NOT_ADDED = "Customer Bill Not Added.";
+	
 	public static final String HEADER_TITLE = "MediCare Purchase Invoice";
 	
 	public static final String HEADER_SPACE = "                         ";
@@ -94,17 +98,23 @@ public class ServiceConstants {
 	
 	public static final String COMPUTER_GENERATED_INVOICE="This is a computer-generated invoice and does not require a signature.";
 
-	public static final String PDF_ALREADY_EXIST =" Pdf File Already Exist..";
+	public static final String PDF_ALREADY_EXIST ="Pdf File Already Exist..";
 	
-	public static final String PDF_SAVE_SUCESSFULLY =" Pdf File Save Sucessfully.";
+	public static final String PDF_SAVE_SUCESSFULLY ="Pdf File Save Sucessfully.";
 	
-	public static final String PDF_NOT_SAVED_EXIST =" Pdf File Not saved.";
+	public static final String PDF_NOT_SAVED_EXIST ="Pdf File Not saved.";
 
 	public static final String USER_NOT_APPROVED = "User Not Approved Something Went Wrong";
 
 	public static final String USER_NOT_REJECTED = "User Not Rejected Something Wrong Here";
 
 	public static final String STOCK_NOT_EDITED = "Stock Not Edited Something Wrong";
+
+	public static final String PDF_FILE_IS_NOT_DELETED = "Pdf file is not Deleted.";
+
+	public static final String PDF_BILL_DELETED_SUCCESSFULLY = "Pdf Bill deleted Successfully.";
+
+	public static final String PDF_NOT_BILL_DELETED_SUCCESSFULLY ="Pdf Bill not deleted, Something went wrong"; 
 	
 
 }

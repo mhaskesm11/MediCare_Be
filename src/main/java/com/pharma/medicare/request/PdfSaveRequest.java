@@ -1,6 +1,7 @@
 package com.pharma.medicare.request;
 
 import java.sql.Date;
+import java.util.List;
 
 public class PdfSaveRequest {
 	
@@ -10,6 +11,7 @@ public class PdfSaveRequest {
     private String invoiceNumber ;
     private String  paidType ;
     private String base64String;
+    private List<ProductSellingDetails> productSellingDetails;
 	public Date getBillingDate() {
 		return billingDate;
 	}
@@ -45,12 +47,19 @@ public class PdfSaveRequest {
 	}
 	public void setBase64String(String base64String) {
 		this.base64String = base64String;
+	}	
+	public List<ProductSellingDetails> getProductSellingDetails() {
+		return productSellingDetails;
+	}
+	public void setProductSellingDetails(List<ProductSellingDetails> productSellingDetails) {
+		this.productSellingDetails = productSellingDetails;
 	}
 	@Override
 	public String toString() {
 		return "PdfSaveRequest [billingDate=" + billingDate + ", customerName=" + customerName + ", fileName="
 				+ fileName + ", invoiceNumber=" + invoiceNumber + ", paidType=" + paidType + ", base64String="
-				+ base64String + "]";
+				+ base64String + ", productSellingDetails=" + productSellingDetails + "]";
 	}
+	
 	    
 }
