@@ -24,7 +24,6 @@ import com.pharma.medicare.repository.CustomerDetailsRepository;
 import com.pharma.medicare.repository.PDFFileDataRepository;
 import com.pharma.medicare.repository.ProductStockRepository;
 import com.pharma.medicare.request.CustomerBillRequest;
-import com.pharma.medicare.request.CustomerBillingRequests;
 import com.pharma.medicare.request.PdfSaveRequest;
 import com.pharma.medicare.request.ProductSellingDetails;
 import com.pharma.medicare.service.BillingService;
@@ -64,7 +63,7 @@ public class BillingServiceImpl implements BillingService {
 //	}	
 
 	@Override
-	public String addCustomerBillDetails(CustomerBillRequest customerBillRequest,String userName) {
+	public String addCustomerBillDetails(CustomerBillRequest customerBillRequest, String userName) {
 
 		LOGGER.info("Entry :: BillingServiceImpl :: addCustomerDetails():" + customerBillRequest);
 		BillingDetails billingDetails = new BillingDetails();
@@ -72,18 +71,24 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Optional<CustomerDetails> optional = customerDetailsRepository
 					.findByCustomerName(customerBillRequest.getCustomerName());
-			BeanUtils.copyProperties(customerBillRequest, billingDetails);
 			if (optional.isPresent()) {
 				billingDetails.setCustomerId(optional.get().getCustomerId());
 			}
-			billingDetails.setIsActive(ServiceConstants.Y);
-			billingDetails.setCreatedBy(userName);
-			billingDetails.setUpdatedBy(userName);
-			billingDetailRepository.save(billingDetails);
-			response = ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY;
 
+			Optional<BillingDetails> billDetails = billingDetailRepository
+					.getBillingDetailByInvoiceNumber(customerBillRequest.getInvoiceNumber());
+			if (billDetails.isPresent()) {
+				billingDetails = billDetails.get();
+				billingDetails.setUpdatedBy(userName);
+			} else {
+				BeanUtils.copyProperties(customerBillRequest, billingDetails);
+				billingDetails.setIsActive(ServiceConstants.Y);
+				billingDetails.setCreatedBy(userName);
+			}
+			response = ServiceConstants.CUSTOMER_BILL_ADDED_SUCESSFULLY;
+			billingDetailRepository.save(billingDetails);
 		} catch (Exception e) {
-			response = ServiceConstants.CUSTOMER_NOT_ADDED;
+			response = ServiceConstants.CUSTOMER_BILL_NOT_ADDED;
 		}
 		LOGGER.info("Exit :: BillingServiceImpl :: addCustomerDetails():" + billingDetails);
 		return response;
@@ -138,7 +143,7 @@ public class BillingServiceImpl implements BillingService {
 		String response = "";
 		try {
 			Optional<PDFFileDetails> optional = pdfFileSaveRepository
-					.getByInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
+					.getPdfFileByInvoiceNumber(pdfSaveRequest.getInvoiceNumber());
 			PDFFileDetails fileDetails = new PDFFileDetails();
 
 			if (optional.isPresent()) {

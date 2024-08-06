@@ -54,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        .authorizeRequests()
 	            .antMatchers(
 	                "/api/v1/authenticate",
+	                "/api/v1/refresh-token{token}",
 	                "/api/v1/user/signup",
 	                "/api/v1/user/login",
 	                "/api/v1/user/forgot/password/{email}",

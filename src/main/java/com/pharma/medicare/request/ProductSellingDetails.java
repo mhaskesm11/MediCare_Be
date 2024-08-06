@@ -39,7 +39,7 @@ public class ProductSellingDetails {
 	}
 	public void setExpDate(Date expDate) {
 		this.expDate = expDate;
-	}
+	}	
 	public Double getTotal() {
 		return total;
 	}
