@@ -24,8 +24,11 @@ import com.pharma.medicare.domain.CustomerDetails;
 import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.request.CustomerBillSearchRequest;
 import com.pharma.medicare.request.CustomerRequest;
+import com.pharma.medicare.request.CustomerSearchRequest;
+import com.pharma.medicare.response.CustomerAllDetailsResponse;
 import com.pharma.medicare.response.CustomerBillSearchResponse;
 import com.pharma.medicare.response.CustomerDetailsResponse;
+import com.pharma.medicare.response.CustomerResponse;
 import com.pharma.medicare.service.CustomerDetailService;
 import com.pharma.medicare.utility.CommonUtil;
 
@@ -58,7 +61,7 @@ public class CustomerDetatilController extends BaseController {
 		}
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
 		return response;
-	}
+	}	
 
 	@GetMapping("customer-all")
 	public List<CustomerDetailsResponse> getAllCustomerDetail() {
@@ -91,6 +94,22 @@ public class CustomerDetatilController extends BaseController {
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
 		return response;
 
+	}
+	
+	@PostMapping("search-all")
+	public CustomerResponse searchAllCustomer(@RequestBody CustomerSearchRequest customerSearchRequest, HttpServletRequest request) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/customer/search-all")));
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerSearchRequest)));
+		CustomerResponse response = new CustomerResponse();
+		try {
+			String userName = getUserNameFromHeader(request);
+			response = customerDetailService.searchAllCustomerDetails(customerSearchRequest, userName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
 	}
 
 	@GetMapping("view-pdf{invoiceNumber}")
@@ -141,6 +160,37 @@ public class CustomerDetatilController extends BaseController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			response = ServiceConstants.PDF_FILE_IS_NOT_DELETED;
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+
+	}
+	
+	@GetMapping("getdetails{customerId}")
+	public CustomerAllDetailsResponse getCustomerDetails(@PathVariable Long customerId) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/customer/getdetails")));
+		CustomerAllDetailsResponse response = null;
+		try {
+			response = customerDetailService.getAllCustomerDetailsById(customerId);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+
+	}
+	
+	@DeleteMapping("delete{customerId}")
+	public String deleteCustomerDetails(@PathVariable Long customerId, HttpServletRequest request) {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/customer/delete")));
+		String response = "";
+		String userName = getUserNameFromHeader(request);
+		try {
+			response = customerDetailService.deleteCustomerDetailsById(customerId, userName);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
 		return response;

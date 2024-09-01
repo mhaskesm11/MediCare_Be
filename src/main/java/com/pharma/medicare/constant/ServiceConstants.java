@@ -114,7 +114,11 @@ public class ServiceConstants {
 
 	public static final String PDF_BILL_DELETED_SUCCESSFULLY = "Pdf Bill deleted Successfully.";
 
-	public static final String PDF_NOT_BILL_DELETED_SUCCESSFULLY ="Pdf Bill not deleted, Something went wrong"; 
+	public static final String PDF_NOT_BILL_DELETED_SUCCESSFULLY ="Pdf Bill not deleted, Something went wrong";
+
+	public static final String ALL_CUSTOMER_RELATED_DETAILS_ARE_DELETED = "All Customer Related Details Deleted Successfully."; 
+	
+	public static final String ALL_CUSTOMER_RELATED_DETAILS_NOT_DELETED = "All Customer Related Details Not Deleted."; 
 	
 
 }
