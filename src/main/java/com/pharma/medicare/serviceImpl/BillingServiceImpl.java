@@ -70,7 +70,7 @@ public class BillingServiceImpl implements BillingService {
 		String response = "";
 		try {
 			Optional<CustomerDetails> optional = customerDetailsRepository
-					.findByCustomerName(customerBillRequest.getCustomerName());
+					.findByCustomerName(customerBillRequest.getCustomerName().toLowerCase());
 			if (optional.isPresent()) {
 				billingDetails.setCustomerId(optional.get().getCustomerId());
 			}
