@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.constant.ServiceConstants;
 import com.pharma.medicare.domain.BillingDetails;
-import com.pharma.medicare.domain.CustomerDetails;
 import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.repository.BillingDetailRepository;
@@ -69,12 +68,6 @@ public class BillingServiceImpl implements BillingService {
 		BillingDetails billingDetails = new BillingDetails();
 		String response = "";
 		try {
-			Optional<CustomerDetails> optional = customerDetailsRepository
-					.findByCustomerName(customerBillRequest.getCustomerName().toLowerCase());
-			if (optional.isPresent()) {
-				billingDetails.setCustomerId(optional.get().getCustomerId());
-			}
-
 			Optional<BillingDetails> billDetails = billingDetailRepository
 					.getBillingDetailByInvoiceNumber(customerBillRequest.getInvoiceNumber());
 			if (billDetails.isPresent()) {

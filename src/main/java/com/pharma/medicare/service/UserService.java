@@ -23,7 +23,7 @@ public interface UserService {
 
 	PasswordResponse forgotUserPassword(String email);
 
-	String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest, String userName);
+	String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest);
 
 	UserDetails loadUserByUsername(String username);
 

@@ -91,7 +91,7 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
 		}
 		customerDetails.setIsActive(ServiceConstants.Y);
 		customerDetails.setCreatedBy(userName);
-		customerDetailsRepository.saveAndFlush(customerDetails);
+		customerDetails = customerDetailsRepository.saveAndFlush(customerDetails);
 		LOGGER.info("Exit :: CustomerDetailServiceImpl :: addCustomerDetails():" + customerDetails);
 		return customerDetails;
 	}
@@ -296,7 +296,7 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
 				offSetQuery = " ORDER BY tcd.customer_address " + customerSearchRequest.getOrderDirection() + " LIMIT "
 						+ offset + " , " + customerSearchRequest.getLimit();
 			} else {
-				offSetQuery = " order by tcd.customer_id asc LIMIT " + offset + " , " + customerSearchRequest.getLimit();
+				offSetQuery = " order by tcd.customer_id Desc LIMIT " + offset + " , " + customerSearchRequest.getLimit();
 			}
 
 		}

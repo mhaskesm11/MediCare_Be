@@ -29,6 +29,7 @@ import com.pharma.medicare.request.UserRequest;
 import com.pharma.medicare.request.UserSignupRequest;
 import com.pharma.medicare.response.PasswordResponse;
 import com.pharma.medicare.response.UserLoginResponse;
+import com.pharma.medicare.response.UserResponse;
 import com.pharma.medicare.response.UserSearchDto;
 import com.pharma.medicare.response.UserSearchResponse;
 import com.pharma.medicare.response.UserSignupResponse;
@@ -72,23 +73,21 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 		LOGGER.info("Entry :: UserServiceImpl :: userLogin():" + userRequest);
 		UserLoginResponse loginResponse = new UserLoginResponse();
 		Optional<User> optional = userRepository.findByUserName(userRequest.getUserName());
+		UserResponse user=new UserResponse();
 
 		if (optional.isPresent()) {
 			User foundUser = optional.get();
 			boolean passwordEqualityCheck=bCryptPasswordEncoder.matches(userRequest.getPassword(), foundUser.getPassword());
-			if (passwordEqualityCheck && foundUser.isApproved()) {
-				loginResponse.setMode(foundUser.getMode());
+			if (passwordEqualityCheck) {
 				loginResponse.setStatus(ServiceConstants.LOGIN_SUCCESSFUL);
+				BeanUtils.copyProperties(foundUser, user);
+				loginResponse.setUser(user);
 
 			} else {
 				
 				if (!passwordEqualityCheck) {
 					loginResponse.setStatus(ServiceConstants.INVALID_PASSWORD);
 				}
-				if (!foundUser.isApproved()) {
-					loginResponse.setStatus(ServiceConstants.WAIT_APPROVAL);
-				}
-
 			}
 		} else {
 			loginResponse.setStatus(ServiceConstants.INVALID_USERNAME);
@@ -129,15 +128,11 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			user.setPassword(bcryptEncoder.encode(userRequest.getPassword()));
 			user.setFirstName(userRequest.getFirstName());
 			user.setLastName(userRequest.getLastName());
-			user.setApproved(false);
-			user.setIsActive("N");
+			user.setIsActive("Y");
 			user.setCreatedBy(userRequest.getUserName()+" (self)");
-			user.setMode("USER");
 			userRepository.save(user);
 			response.setStatus(true);
-			response.setStatusText("Signup Successful"
-					  + "Please wait for approval");
-			
+			response.setStatusText(" Signup Successful ");	
 		}
 		
 		return response;
@@ -158,13 +153,13 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	}
 
 	@Override
-	public String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest, String userName) {
+	public String userPasswordChangeSave(UpdatePassWordRequest updatePassWordRequest) {
 		Optional<User> optional = userRepository.findByUserName(updatePassWordRequest.getUserName());
 		String response=null;
 		if(optional.isPresent()) {
 			User user=new User();
 			BeanUtils.copyProperties(optional.get(), user);
-			user.setUpdatedBy(userName);
+			user.setUpdatedBy(updatePassWordRequest.getUserName());
 			user.setPassword(bcryptEncoder.encode(updatePassWordRequest.getNewPassword()));
 			userRepository.save(user);
 			response=ServiceConstants.USER_PASSWORD_MODIFIED;
@@ -286,13 +281,6 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			}
 			user.setContactNumber(userRequest.getContactNumber());
 			user.setEmail(userRequest.getEmail());
-			if(CommonUtil.isNotNull(userRequest.getMode())) {
-				user.setMode(userRequest.getMode().toUpperCase());
-			}else {
-				user.setMode("USER");
-			}
-
-			user.setApproved(true);
 			user.setIsActive("Y");
 			userRepository.save(user);
 			return user;

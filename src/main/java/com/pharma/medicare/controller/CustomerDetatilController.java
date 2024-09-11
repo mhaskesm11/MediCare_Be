@@ -25,6 +25,7 @@ import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.request.CustomerBillSearchRequest;
 import com.pharma.medicare.request.CustomerRequest;
 import com.pharma.medicare.request.CustomerSearchRequest;
+import com.pharma.medicare.response.AddCustomerResponse;
 import com.pharma.medicare.response.CustomerAllDetailsResponse;
 import com.pharma.medicare.response.CustomerBillSearchResponse;
 import com.pharma.medicare.response.CustomerDetailsResponse;
@@ -43,18 +44,19 @@ public class CustomerDetatilController extends BaseController {
 	CustomerDetailService customerDetailService;
 
 	@PostMapping("addcustomer")
-	public String addCustomer(@RequestBody CustomerRequest customerRequest, HttpServletRequest request) {
+	public AddCustomerResponse addCustomer(@RequestBody CustomerRequest customerRequest, HttpServletRequest request) {
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/customer/addcustomer")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(customerRequest)));
-		String response = "";
+		AddCustomerResponse response = new AddCustomerResponse();
 
 		try {
 			String userName = getUserNameFromHeader(request);
 			CustomerDetails optional = customerDetailService.addCustomerDetails(customerRequest, userName);
 			if (CommonUtil.isNotNull(optional)) {
-				response = ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY;
+				response.setCustomerDetail(optional);
+				response.setMessage(ServiceConstants.CUSTOMER_ADDED_SUCESSFULLY);
 			} else {
-				response = ServiceConstants.CUSTOMER_NOT_ADDED;
+				response.setMessage(ServiceConstants.CUSTOMER_NOT_ADDED);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

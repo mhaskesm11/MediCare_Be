@@ -1,5 +1,6 @@
 package com.pharma.medicare.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.constant.ServiceConstants;
+import com.pharma.medicare.domain.ProductStock;
 import com.pharma.medicare.request.ProductSearchRequest;
 import com.pharma.medicare.request.ProductStockRequest;
 import com.pharma.medicare.response.ProductSearchResponse;
@@ -95,6 +98,19 @@ public class StockController extends BaseController {
 		return response;
 	}
 	
+	@GetMapping("all-products")
+	public List<ProductStock> getAllProductDetails() {
+		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/stock/all-products")));
+		
+		List<ProductStock> response = new ArrayList<>();
+		try {
+			response = stockService.getAllProductDetails();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));
+		return response;
+	}
 	
 
 }
