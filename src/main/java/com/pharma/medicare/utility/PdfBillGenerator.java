@@ -3,9 +3,7 @@ package com.pharma.medicare.utility;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 
@@ -25,7 +23,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.pharma.medicare.constant.ServiceConstants;
-import com.pharma.medicare.domain.PDFFileDetails;
 import com.pharma.medicare.repository.PDFFileDataRepository;
 import com.pharma.medicare.request.CustomerBillingRequests;
 import com.pharma.medicare.request.ProductSellingDetails;

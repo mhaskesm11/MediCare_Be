@@ -192,4 +192,10 @@ public class StockServiceimpl implements StockService {
 		return response;
 
 	}
+
+	@Override
+	public List<ProductStock> getAllProductDetails() {
+		
+		return productStockRepository.getAllProductDetails();
+	}
 }

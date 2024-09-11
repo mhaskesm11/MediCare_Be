@@ -4,16 +4,17 @@ import java.sql.Date;
 
 public class CustomerBillRequest {
 	
-	private String customerName;
+	private Long customerId;
 	private String invoiceNumber;
 	private Date billingDate;
 	private String paidType;
 	private Long paidAmount;
-	public String getCustomerName() {
-		return customerName;
+	
+	public Long getCustomerId() {
+		return customerId;
 	}
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
 	}
 	public String getInvoiceNumber() {
 		return invoiceNumber;
@@ -41,10 +42,8 @@ public class CustomerBillRequest {
 	}
 	@Override
 	public String toString() {
-		return "CustomerBillRequest [customerName=" + customerName + ", invoiceNumber=" + invoiceNumber
-				+ ", billingDate=" + billingDate + ", paidType=" + paidType + ", paidAmount=" + paidAmount + "]";
+		return "CustomerBillRequest [customerId=" + customerId + ", invoiceNumber=" + invoiceNumber + ", billingDate="
+				+ billingDate + ", paidType=" + paidType + ", paidAmount=" + paidAmount + "]";
 	}
 	
-	
-
 }

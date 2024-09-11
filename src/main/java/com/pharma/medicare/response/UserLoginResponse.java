@@ -4,6 +4,7 @@ public class UserLoginResponse {
 	
 	private String status;
 	private String mode;
+	private UserResponse user;
 
 	public String getStatus() {
 		return status;
@@ -21,8 +22,16 @@ public class UserLoginResponse {
 		this.mode = mode;
 	}
 
+	public UserResponse getUser() {
+		return user;
+	}
+
+	public void setUser(UserResponse user) {
+		this.user = user;
+	}
+
 	@Override
 	public String toString() {
-		return "UserLoginResponse [status=" + status + ", mode=" + mode + "]";
+		return "UserLoginResponse [status=" + status + ", mode=" + mode + ", user=" + user + "]";
 	}
 }

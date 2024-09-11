@@ -88,14 +88,14 @@ public class UserController extends BaseController {
 
 	// password changes save window
 	@PostMapping("update/password")
-	public String userPasswordChangeSave(@RequestBody UpdatePassWordRequest updatePassWordRequest,HttpServletRequest request) {
+	public String userPasswordChangeSave(@RequestBody UpdatePassWordRequest updatePassWordRequest) {
 
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/update/password")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(updatePassWordRequest)));
 		String response = null;
 		try {
-			String userName=getUserNameFromHeader(request);
-			response = userService.userPasswordChangeSave(updatePassWordRequest,userName);
+
+			response = userService.userPasswordChangeSave(updatePassWordRequest);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
