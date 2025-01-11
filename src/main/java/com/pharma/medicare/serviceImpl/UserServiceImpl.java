@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pharma.medicare.constant.ServiceConstants;
+import com.pharma.medicare.controller.JwtAuthenticationController;
 import com.pharma.medicare.domain.User;
 import com.pharma.medicare.repository.UserRepository;
 import com.pharma.medicare.request.SearchUserRequest;
@@ -27,6 +28,7 @@ import com.pharma.medicare.request.UpdatePassWordRequest;
 import com.pharma.medicare.request.UserLoginRequest;
 import com.pharma.medicare.request.UserRequest;
 import com.pharma.medicare.request.UserSignupRequest;
+import com.pharma.medicare.response.AuthenticationResponse;
 import com.pharma.medicare.response.PasswordResponse;
 import com.pharma.medicare.response.UserLoginResponse;
 import com.pharma.medicare.response.UserResponse;
@@ -49,6 +51,9 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	private JwtAuthenticationController jwtAuthentication;
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
@@ -80,6 +85,12 @@ public class UserServiceImpl implements UserService,UserDetailsService {
 			boolean passwordEqualityCheck=bCryptPasswordEncoder.matches(userRequest.getPassword(), foundUser.getPassword());
 			if (passwordEqualityCheck) {
 				loginResponse.setStatus(ServiceConstants.LOGIN_SUCCESSFUL);
+				try {
+					AuthenticationResponse jwtToken=jwtAuthentication.authenticate(userRequest);
+					loginResponse.setResponse(jwtToken);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				BeanUtils.copyProperties(foundUser, user);
 				loginResponse.setUser(user);
 

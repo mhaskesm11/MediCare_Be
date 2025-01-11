@@ -262,12 +262,20 @@ public class CustomerDetailServiceImpl implements CustomerDetailService {
 		String countResponse = "";
 		String offSetQuery = "";
 		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder customerName=new StringBuilder();
 		CustomerResponse customerResponse = new CustomerResponse();
-
+		if(CommonUtil.isNotNull(customerSearchRequest.getFirstName())) {
+			customerName.append(customerSearchRequest.getFirstName()+" ");
+		}
+		if(CommonUtil.isNotNull(customerSearchRequest.getLastName())) {
+			customerName.append( customerSearchRequest.getLastName());
+		}
+		
+		
 		CommonUtil.checkAppendConditionForStringField(stringBuilder, "tcd.customer_name",
-				customerSearchRequest.getFirstName());
-		CommonUtil.checkAppendConditionForStringField(stringBuilder, "tcd.customer_name",
-				customerSearchRequest.getLastName());
+				customerName.toString());
+//		CommonUtil.checkAppendConditionForStringField(stringBuilder, "tcd.customer_name",
+//				customerSearchRequest.getLastName());
 		CommonUtil.checkAppendConditionForStringField(stringBuilder, "tcd.contact_number",
 				customerSearchRequest.getContactNumber());
 		CommonUtil.checkAppendConditionForStringField(stringBuilder, "tcd.customer_address",
