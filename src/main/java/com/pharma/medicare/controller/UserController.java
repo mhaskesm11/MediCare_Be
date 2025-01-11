@@ -23,6 +23,7 @@ import com.pharma.medicare.request.UserRequest;
 import com.pharma.medicare.request.UserSignupRequest;
 import com.pharma.medicare.response.PasswordResponse;
 import com.pharma.medicare.response.UserLoginResponse;
+import com.pharma.medicare.response.UserModifiedResponse;
 import com.pharma.medicare.response.UserSearchResponse;
 import com.pharma.medicare.response.UserSignupResponse;
 import com.pharma.medicare.service.UserService;
@@ -122,17 +123,18 @@ public class UserController extends BaseController {
 	
 	// add user (add user window)
 	@PostMapping("save/user")
-	public String addUserDetails(@RequestBody UserRequest userRequest, HttpServletRequest request) {
+	public UserModifiedResponse addUserDetails(@RequestBody UserRequest userRequest, HttpServletRequest request) {
 
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString("api/v1/user/login")));
 		LOGGER.info(String.format(ServiceConstants.REQUEST_URL, CommonUtil.getString(userRequest)));
-		String response = null;
+		UserModifiedResponse response = new UserModifiedResponse();
 		String userName=getUserNameFromHeader(request);
 		User user = userService.addUserDetails(userRequest, userName);
 		if (user != null) {
-			response = ServiceConstants.USER_ADDED_SUCCESSFULLY;
+			response.setMessage(ServiceConstants.USER_ADDED_SUCCESSFULLY) ;
+			response.setUser(user);
 		} else {
-			response = ServiceConstants.USER_NOT_ADDED;
+			response.setMessage(ServiceConstants.USER_NOT_ADDED) ;
 		}
 
 		LOGGER.info(String.format(ServiceConstants.RESPONSE, CommonUtil.getString(response)));

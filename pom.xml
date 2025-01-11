@@ -73,7 +73,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
@@ -97,6 +97,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

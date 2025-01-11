@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pharma.medicare.config.JwtTokenUtil;
-import com.pharma.medicare.request.JwtRequest;
+import com.pharma.medicare.request.UserLoginRequest;
 import com.pharma.medicare.response.AuthenticationResponse;
 
 
@@ -25,7 +25,7 @@ public class JwtAuthenticationController {
 	private JwtTokenUtil jwtTokenUtil;
 	
 	 @PostMapping("/authenticate")
-	    public AuthenticationResponse authenticate(@RequestBody JwtRequest request) throws Exception {
+	    public AuthenticationResponse authenticate(@RequestBody UserLoginRequest request) throws Exception {
 	        try {
 	            authenticationManager.authenticate(
 	                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())

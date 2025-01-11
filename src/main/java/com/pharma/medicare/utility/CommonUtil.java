@@ -60,7 +60,7 @@ public class CommonUtil {
 	public static void checkAppendConditionForStringField(StringBuilder stringBuilder, String field,
 			String value) {
 		if (CommonUtil.isNotNull(value)) {
-	        stringBuilder.append(field).append(" like ");
+	        stringBuilder.append(" "+field).append(" like ");
 	        stringBuilder.append("'%" + value + "%'");
 	        stringBuilder.append(" And");
 	    }
@@ -69,7 +69,7 @@ public class CommonUtil {
 	public static void checkAppendConditionForDoubleValue(StringBuilder stringBuilder, String field,
 			Double value) {
 		if (CommonUtil.isNotNull(value)) {
-	        stringBuilder.append(field).append(" = ");
+	        stringBuilder.append(" "+field).append(" = ");
 	        stringBuilder.append( value );
 	        stringBuilder.append(" And");
 	    }
